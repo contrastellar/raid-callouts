@@ -47,5 +47,4 @@ COPY . .
 # Expose the port that the application listens on.
 EXPOSE 8000
 
-# Run the application.
-CMD python ./src/py/core.py
+RUN python3 src/py/poster.py
