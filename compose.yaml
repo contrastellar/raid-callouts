@@ -1,7 +1,7 @@
 services:
   listener:
     build: .
-    command: ["python", "src/py/listener.py"]
+    command: ["python", "src/py/bot-core.py"]
   poster:
     build: .
-    command: ["python", "src/py/poster.py"]
+    command: ["python", "src/py/bot-aux.py"]

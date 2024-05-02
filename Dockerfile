@@ -47,4 +47,4 @@ COPY . .
 # Expose the port that the application listens on.
 EXPOSE 8000
 
-CMD python3 src/py/poster.py
+CMD python3 src/py/bot-aux.py
