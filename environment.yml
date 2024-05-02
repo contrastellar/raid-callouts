@@ -2,18 +2,26 @@ name: raid-callouts
 channels:
   - defaults
 dependencies:
+  - brotli-python=1.0.9
   - bzip2=1.0.8
   - ca-certificates=2024.3.11
+  - certifi=2024.2.2
+  - charset-normalizer=2.0.4
+  - idna=3.7
+  - libcxx=14.0.6
   - libffi=3.4.4
   - ncurses=6.4
   - openssl=3.0.13
   - pip=23.3.1
+  - pysocks=1.7.1
   - python=3.11.5
   - readline=8.2
+  - requests=2.31.0
   - setuptools=68.2.2
   - sqlite=3.41.2
   - tk=8.6.12
   - tzdata=2024a
+  - urllib3=2.1.0
   - wheel=0.41.2
   - xz=5.4.6
   - zlib=1.2.13
@@ -23,7 +31,6 @@ dependencies:
       - attrs==23.2.0
       - discord-py==2.3.2
       - frozenlist==1.4.1
-      - idna==3.7
       - multidict==6.0.5
       - psycopg2-binary==2.9.9
       - yarl==1.9.4
