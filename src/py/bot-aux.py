@@ -1,6 +1,7 @@
 """
-This module is the poster to discord.
-This module will post to the discord whenever the script is run, detailing the callouts for the current raid
+This module is the automated poster to discord.
+This module will post to the discord whenever the script is run, detailing the callouts for the current raid for the next seven days.
+This automation will be run on a daily basis, through a cron job + docker.
 
 @author: Gabriella 'contrastellar' Agathon
 """
@@ -29,7 +30,7 @@ async def on_ready():
     GUILD = client.get_guild(SAMPLE_GUILD_ID) # Should grab Errai
     CHANNEL = GUILD.get_channel(SAMPLE_CHANNEL_ID) # Should grab #dev
     await CHANNEL.send('Hello world! /w auto exit')
-    exit(0) # This is a messy way to exit, but it works for now
+    await client.close() # Another way to exit, a little bit cleaner than exit(0)
 
 TOKEN = open('discord.token', encoding='utf-8').read()
 client.run(TOKEN)
