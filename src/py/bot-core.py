@@ -21,8 +21,8 @@ NUM_COL_PER_CALLOUT = 4
 DATABASE_CONN = None
 # Guild is Errai, my private server
 # Channel is #dev, in Errai
-ERRAI_GUILD_ID = int(477298331777761280) # FIXME needs to be dynamically loaded in the future
-ERRAI_CHANNEL_ID = int(927271992216920146) # FIXME needs to be dynamically loaded in the future
+ERRAI_GUILD_ID = int(477298331777761280)
+ERRAI_CHANNEL_ID = int(927271992216920146)
 
 FA_GUILD_ID = int(865781604881530940)
 FA_CALLOUT_CHANNEL_ID = int(888844785274724362)
@@ -42,9 +42,6 @@ client = commands.Bot(command_prefix='!', intents=intents)
 
 @client.event
 async def on_ready() -> None:
-    #for guild in client.guilds:
-    #    print(f'{guild.name} (id: {guild.id})')
-
     await client.tree.sync()
     print(f'{client.user} has connected to Discord!')
     return
@@ -65,7 +62,6 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
     except psycopg2.errors.UniqueViolation:
         await interaction.response.send_message(f'User {user_id}/{user_nick} -- you have already added a callout for {date_of_callout} with reason: {reason}')
     else:
-        #print(f'User {user_id}/{user_nick} added a callout for {date_of_callout} with reason: {reason}')
         await interaction.response.send_message(f'User {user_id}/{user_nick} added a callout for {date_of_callout} with reason: {reason}')
 
 
