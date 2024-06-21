@@ -10,13 +10,13 @@ This module will listen to the discord server for two things:
 
 @author: Gabriella 'contrastellar' Agathon
 """
-import datetime
 import discord
 import psycopg2
 from discord.ext import commands
 import helper.request_helper, helper.db_helper
 
 DAYS_FOR_CALLOUTS = 7
+NUM_COL_PER_CALLOUT = 4
 
 DATABASE_CONN = None
 # Guild is Errai, my private server
@@ -42,8 +42,8 @@ client = commands.Bot(command_prefix='!', intents=intents)
 
 @client.event
 async def on_ready() -> None:
-    for guild in client.guilds:
-        print(f'{guild.name} (id: {guild.id})')
+    #for guild in client.guilds:
+    #    print(f'{guild.name} (id: {guild.id})')
 
     await client.tree.sync()
     print(f'{client.user} has connected to Discord!')
@@ -65,63 +65,40 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
     except psycopg2.errors.UniqueViolation:
         await interaction.response.send_message(f'User {user_id}/{user_nick} -- you have already added a callout for {date_of_callout} with reason: {reason}')
     else:
-        print(f'User {user_id}/{user_nick} added a callout for {date_of_callout} with reason: {reason}')
+        #print(f'User {user_id}/{user_nick} added a callout for {date_of_callout} with reason: {reason}')
         await interaction.response.send_message(f'User {user_id}/{user_nick} added a callout for {date_of_callout} with reason: {reason}')
+
+
+    """
+    This function returns a string of the callouts
+    Needs to do some funky stuff with list -> tuple -> string
+    """
+def format_list_of_callouts(callouts: list) -> str:
+    length = len(callouts)
+    output = ''
+    if length == 0:
+        return 'No callouts found for the requested timeframe'
+    
+    for entry in callouts:
+        i: int = 0
+        for item in entry:
+            if i == 0:
+                i += 1
+                continue
+            elif i == 1 or i == 2:
+                output += f'{item} -- '
+            else:
+                output += f'{item}\n'
+            i += 1
+    return output
 
 
 @client.tree.command()
 async def schedule(interaction: discord.Interaction, days: int = DAYS_FOR_CALLOUTS) -> None:
-    user_id = interaction.user.id
-    await interaction.response.send_message(f'Callouts for the next {days} days: {DATABASE_CONN.query_callouts(days=days)}')
-
-
-@client.event
-async def on_message(message: discord.message.Message) -> None:
-    message_content: discord.message.Message.content = message.content # Shorthand to grab the message.content
-    channel_id: int = message.channel.id # Shorthand to!! grab the message.channel.id
-    guild_id: int = message.guild.id     # Shorthand to grab the messsage.guild.id
-    # These should remove the need to hardcode the channel and guild we're talking to
-
-
-    if(message_content.startswith('!schedule')):
-        if guild_id != ERRAI_GUILD_ID and guild_id != FA_GUILD_ID:
-            await message.reply(f'This command is not available in this server.')
-            return
-
-        if channel_id != ERRAI_CHANNEL_ID and channel_id != FA_CALLOUT_CHANNEL_ID:        
-            await message.reply(f'This command is not available in this channel.')
-            return
-        
-        response = DATABASE_CONN.query_callouts(days=DAYS_FOR_CALLOUTS)
-        await message.reply(f'Callouts for the next {DAYS_FOR_CALLOUTS} days: {response}')
-
-    # The !callout command -- which will allow users to add a new scheduled callout
-    # This is gonna be wonky because we're going to need to parse the message.content
-    if(message_content.startswith('!callout')):
-        if guild_id != ERRAI_GUILD_ID and guild_id != FA_GUILD_ID:
-            await message.reply(f'This command is not available in this server.')
-            return
-        
-        if channel_id != ERRAI_CHANNEL_ID and channel_id != FA_CALLOUT_CHANNEL_ID:        
-            await message.reply(f'This command is not available in this channel.')
-            return
-
-        #TODO parse message_content for the user's ID, and nickname
-        user_id = message.author.id
-        nickname = message.author.nick
-
-        # TODO parse message_content for the date
-
-
-        # This is the command that will allow users to add a new scheduled callout
-        await message.reply(f'Callout added for {message.author.id}')
-        return
-
-    if(message_content.startswith('!pulls')):
-        # TODO OPTIONAL -- the !pulls command
-        # This is the command that will report the total pulls for the current raid
-        await message.reply(f'This command is not available at this time.')
-        return
+    callouts: list = DATABASE_CONN.query_callouts(days=days)
+    callouts: str = format_list_of_callouts(callouts)
+    await interaction.response.send_message(f'Callouts for the next {days} days:\n{callouts}')
+    return
 
 
 # To be used for reading/writing to the database 
