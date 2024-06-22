@@ -61,20 +61,24 @@ class DBHelper():
         self.__CONN = connect_config(_config)
         self.__CONN.autocommit = True
 
+
     def __init__(self, filename: str) -> None:
         _config = load_config(filename = filename)
         self.__CONN = connect_config(_config)
         self.__CONN.autocommit = True
+
 
     def __init__(self, section: str) -> None:
         _config = load_config(section = section)
         self.__CONN = connect_config(_config)
         self.__CONN.autocommit = True
 
+
     def __init__(self) -> None:
         _config = load_config()
         self.__CONN = connect_config(_config)
         self.__CONN.autocommit = True
+
 
     def __del__(self):
         """
@@ -82,6 +86,7 @@ class DBHelper():
         No need to do anything here
         """
         pass
+
 
     def query_callouts(self, days: int) -> list:
         """This function will query the database for the callouts for the next X days, where X is defined by the days parameter.
@@ -98,6 +103,7 @@ class DBHelper():
 
         return cursor.fetchall() # No idea if this is actually returning a list
     
+
     def add_callout(self, user_id: int, callout: datetime.datetime, reason: str, nickname: str) -> None:
         cursor = self.__CONN.cursor()
 
@@ -106,6 +112,7 @@ class DBHelper():
 
         return
     
+
     def remove_callout(self, user_id: int, callout: datetime.datetime) -> None:
         cursor = self.__CONN.cursor()
 
@@ -113,3 +120,22 @@ class DBHelper():
         self.__CONN.commit()
 
         return
+    
+    def format_list_of_callouts(self, callouts: list) -> str:
+        length = len(callouts)
+        output = ''
+        if length == 0:
+            return 'No callouts found for the requested timeframe'
+        
+        for entry in callouts:
+            i: int = 0
+            for item in entry:
+                if i == 0:
+                    i += 1
+                    continue
+                elif i == 1 or i == 2:
+                    output += f'{item} -- '
+                else:
+                    output += f'{item}\n'
+                i += 1
+        return output
