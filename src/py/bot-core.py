@@ -81,30 +81,12 @@ async def remove_callout(interaction: discord.Interaction, date_of_callout: str)
     This function returns a string of the callouts
     Needs to do some funky stuff with list -> tuple -> string
     """
-def format_list_of_callouts(callouts: list) -> str:
-    length = len(callouts)
-    output = ''
-    if length == 0:
-        return 'No callouts found for the requested timeframe'
-    
-    for entry in callouts:
-        i: int = 0
-        for item in entry:
-            if i == 0:
-                i += 1
-                continue
-            elif i == 1 or i == 2:
-                output += f'{item} -- '
-            else:
-                output += f'{item}\n'
-            i += 1
-    return output
 
 
 @client.tree.command()
 async def schedule(interaction: discord.Interaction, days: int = DAYS_FOR_CALLOUTS) -> None:
     callouts: list = DATABASE_CONN.query_callouts(days=days)
-    callouts: str = format_list_of_callouts(callouts)
+    callouts: str = DATABASE_CONN.format_list_of_callouts(callouts)
     await interaction.response.send_message(f'Callouts for the next {days} days:\n{callouts}')
     return
 
