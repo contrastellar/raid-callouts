@@ -3,3 +3,4 @@ discord.token
 database.ini
 *.dat
 __pycache__/
+.pytest_cache/
