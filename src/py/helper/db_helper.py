@@ -105,3 +105,11 @@ class DBHelper():
         self.__CONN.commit()
 
         return
+    
+    def remove_callout(self, user_id: int, callout: datetime.datetime) -> None:
+        cursor = self.__CONN.cursor()
+
+        cursor.execute("DELETE FROM callouts WHERE user_id = %s AND date = %s", (user_id, callout))
+        self.__CONN.commit()
+
+        return

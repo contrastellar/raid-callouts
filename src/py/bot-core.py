@@ -65,6 +65,18 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
         await interaction.response.send_message(f'User {user_id}/{user_nick} added a callout for {date_of_callout} with reason: {reason}')
 
 
+@client.tree.command()
+async def remove_callout(interaction: discord.Interaction, date_of_callout: str) -> None:
+    user_id = interaction.user.id
+    user_nick = interaction.user.display_name
+    try:
+        DATABASE_CONN.remove_callout(user_id=user_id, callout=date_of_callout)
+    except psycopg2.errors.Error as e:
+        await interaction.response.send_message(f'User {user_nick} -- you have not added a callout for {date_of_callout}')
+    else:
+        await interaction.response.send_message(f'User {user_nick} removed a callout for {date_of_callout}')
+
+
     """
     This function returns a string of the callouts
     Needs to do some funky stuff with list -> tuple -> string
