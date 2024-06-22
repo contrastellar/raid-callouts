@@ -6,6 +6,7 @@ This module(s) will contain all of the helper functions for the bot
 """
 
 import psycopg2
+import psycopg2.extensions
 from configparser import ConfigParser
 import datetime
 
@@ -37,7 +38,7 @@ def load_config(filename='database.ini', section='postgresql'):
     
     return config
 
-def connect_config(config) -> psycopg2.connect:
+def connect_config(config) -> psycopg2.extensions.connection:
     """ Connect to the PostgreSQL database server """
     try:
         # connecting to the PostgreSQL server
@@ -54,7 +55,7 @@ class DBHelper():
     This class will contain all of the helper functions for the bot
     """
     
-    __CONN: psycopg2.connect = None
+    __CONN: psycopg2.extensions.connection = None
 
     def __init__(self, filename: str, section: str) -> None:
         _config = load_config(filename=filename, section=section)
