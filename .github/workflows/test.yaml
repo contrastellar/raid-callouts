@@ -5,7 +5,11 @@ on:
         branches:
             - gabby-dev
             - main
-
+    
+    pull_request:
+        branches:
+            - gabby-dev
+            - josh-dev
 jobs:
     test:
         runs-on: ubuntu-latest
