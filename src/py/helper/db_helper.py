@@ -47,6 +47,9 @@ def connect_config(config) -> psycopg2.extensions.connection:
             return conn
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
+    finally:
+        if conn is None:
+            raise psycopg2.DatabaseError('Failed to connect to the PostgreSQL database')
     
 
 class DBHelper():
