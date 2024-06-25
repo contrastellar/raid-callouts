@@ -43,6 +43,7 @@ class RequestsHelper():
         url = self.__URL
 
         payload = "{\"query\":\"query{\\n\\treportData{\\n\\t\\treport(code: \\\"Bc6zDW9GM4bVkthf\\\"){\\n\\t\\t\\tfights{\\n\\t\\t\\t\\tname,\\n\\t\\t\\t\\tencounterID,\\n\\t\\t\\t\\tid\\n\\t\\t\\t}\\n\\t\\t}\\n\\t}\\n}\"}"
+        # I did double check, and the authorization token does not contain any secret information -- @contrastellar
         headers = {
             "Content-Type": "application/json",
             "User-Agent": "Mozilla/5.0 (compatible; raid-callous/1.0; +https://github.com/contrastellar/raid-callouts)",
