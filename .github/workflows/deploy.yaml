@@ -47,5 +47,5 @@ jobs:
             - name: build docker image on host + run it
               run: |
                ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "cd /home/${{ secrets.HOST_USER }}/runner/ && docker compose up"
-              continue-on-error: true
+
             
