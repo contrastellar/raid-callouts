@@ -1,0 +1,54 @@
+name: "Push and Build Docker Container"
+
+on:
+    push:
+        branches: [ main ]
+
+jobs:
+    push-and-build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: shimataro/ssh-key-action@v2
+              with:
+                key: ${{ secrets.HOST_PRIVATEKEY }}
+                known_hosts: 'placeholder'
+
+            - name: add database.ini
+              run: |
+                cd $GITHUB_WORKSPACE/
+                touch database.ini
+                echo "${{ secrets.DATABASE_INI }}" >> database.ini
+
+            - name: add discord token
+              run: |
+                cd $GITHUB_WORKSPACE/
+                echo "${{ secrets.DISCORD_TOKEN }}" >> discord.token
+
+            - name: add known hosts to runner
+              run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+            - name: clean build directory on host
+              run: |
+                ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "rm -rdf /home/${{ secrets.HOST_USER }}/runner/raid-callouts"
+
+            - name: remove old image from host
+              run: |
+                ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "docker stop raid-callouts"
+                ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "docker rmi contrastellar/raid-callouts:build"
+              continue-on-error: true
+                
+            - name: deploy /w rsync to host
+              run: |
+                rsync -avz $GITHUB_WORKSPACE ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.HOST_USER }}/runner/
+            
+            - name: build docker image on host
+              run: |
+               ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "docker build /home/${{ secrets.HOST_USER }}/runner/raid-callouts/ --tag contrastellar/raid-callouts:build"
+              continue-on-error: true
+            
+            - name: run docker image
+              run: |
+               ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "docker run --name raid-callouts contrastellar/raid-callouts:build"
