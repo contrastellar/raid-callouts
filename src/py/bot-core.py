@@ -61,6 +61,8 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
         DATABASE_CONN.add_callout(user_id=user_id, callout=date_of_callout, reason=reason, nickname=user_nick)
     except psycopg2.errors.UniqueViolation:
         await interaction.response.send_message(f'User {user_id}/{user_nick} -- you have already added a callout for {date_of_callout} with reason: {reason}')
+    except psycopg2.errors.InvalidDatetimeFormat:
+        await interaction.response.send_message(f'User {user_nick} -- please format the date as one of the following: \n YYYY-MM-DD \n MM-DD-YYYY \n YYYYMMDD')
     else:
         await interaction.response.send_message(f'User {user_id}/{user_nick} added a callout for {date_of_callout} with reason: {reason}')
 
@@ -75,12 +77,6 @@ async def remove_callout(interaction: discord.Interaction, date_of_callout: str)
         await interaction.response.send_message(f'User {user_nick} -- you have not added a callout for {date_of_callout}')
     else:
         await interaction.response.send_message(f'User {user_nick} removed a callout for {date_of_callout}')
-
-
-    """
-    This function returns a string of the callouts
-    Needs to do some funky stuff with list -> tuple -> string
-    """
 
 
 @client.tree.command()

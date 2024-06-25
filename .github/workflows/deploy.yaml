@@ -2,7 +2,7 @@ name: "Push and Build Docker Container"
 
 on:
     push:
-        branches: [ main ]
+        branches: [ main, gabby-dev ]
 
 jobs:
     push-and-build:
@@ -44,11 +44,8 @@ jobs:
               run: |
                 rsync -avz $GITHUB_WORKSPACE ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.HOST_USER }}/runner/
             
-            - name: build docker image on host
+            - name: build docker image on host + run it
               run: |
-               ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "docker build /home/${{ secrets.HOST_USER }}/runner/raid-callouts/ --tag contrastellar/raid-callouts:build"
+               ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "cd /home/${{ secrets.HOST_USER }}/runner/ && docker compose up"
               continue-on-error: true
             
-            - name: run docker image
-              run: |
-               ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "docker run --name raid-callouts contrastellar/raid-callouts:build"

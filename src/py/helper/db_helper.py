@@ -102,13 +102,13 @@ class DBHelper():
             list: list of users + their callouts for the next X days
         """
         cursor = self.__CONN.cursor()
-        cursor.execute(f"SELECT * FROM callouts WHERE date >= NOW() AND date <= NOW() + INTERVAL '{days} days'")
+        cursor.execute(f"SELECT * FROM callouts WHERE date >= NOW() - INTERVAL '1 day' AND date <= NOW() + INTERVAL '{days} days'")
         self.__CONN.commit()
 
         return cursor.fetchall() # No idea if this is actually returning a list
     
 
-    def add_callout(self, user_id: int, callout: datetime.datetime, reason: str, nickname: str) -> None:
+    def add_callout(self, user_id: int, callout: datetime.date, reason: str, nickname: str) -> None:
         cursor = self.__CONN.cursor()
 
         cursor.execute("INSERT INTO callouts (user_id, date, reason, nickname) VALUES (%s, %s, %s, %s)", (user_id, callout, reason, nickname))
