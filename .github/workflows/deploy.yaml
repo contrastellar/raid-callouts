@@ -1,8 +1,11 @@
 name: "Push and Build Docker Container"
 
 on:
-    push:
-        branches: [ main, gabby-dev ]
+    workflow_run:
+        workflows: ["Test Helper Module"]
+        branches: ["main", "gabby-dev"]
+        types:
+            - completed
 
 jobs:
     push-and-build:
