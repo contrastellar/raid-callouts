@@ -60,6 +60,7 @@ class DBHelper():
     
     __CONN: psycopg2.extensions.connection = None
 
+    # TODO change this to use default parameters, reducing code bloat
     def __init__(self, filename: str, section: str) -> None:
         _config = load_config(filename=filename, section=section)
         self.__CONN = connect_config(_config)
@@ -89,6 +90,7 @@ class DBHelper():
         Destructor for the DBHelper class
         No need to do anything here
         """
+        self.__CONN.close()
         pass
 
 
@@ -102,6 +104,7 @@ class DBHelper():
             list: list of users + their callouts for the next X days
         """
         cursor = self.__CONN.cursor()
+        # Weird query, but it grabs the callouts from the last day to the next X days.
         cursor.execute(f"SELECT * FROM callouts WHERE date >= NOW() - INTERVAL '1 day' AND date <= NOW() + INTERVAL '{days} days'")
         self.__CONN.commit()
 
@@ -135,6 +138,7 @@ class DBHelper():
             i: int = 0
             for item in entry:
                 if i == 0:
+                    # Skip the user_id column
                     i += 1
                     continue
                 elif i == 1 or i == 2:
@@ -142,4 +146,5 @@ class DBHelper():
                 else:
                     output += f'{item}\n'
                 i += 1
+
         return output
