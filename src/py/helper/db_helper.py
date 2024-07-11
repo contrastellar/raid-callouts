@@ -105,7 +105,7 @@ class DBHelper():
         """
         cursor = self.__CONN.cursor()
         # Weird query, but it grabs the callouts from the last day to the next X days.
-        cursor.execute(f"SELECT * FROM callouts WHERE date >= NOW() - INTERVAL '1 day' AND date <= NOW() + INTERVAL '{days} days'")
+        cursor.execute(f"SELECT * FROM callouts WHERE date >= NOW() - INTERVAL '1 day' AND date <= NOW() + INTERVAL '{days} days' ORDER BY date ASC;")
         self.__CONN.commit()
 
         return cursor.fetchall() # No idea if this is actually returning a list
