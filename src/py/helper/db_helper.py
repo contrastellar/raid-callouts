@@ -12,8 +12,7 @@ import datetime
 
 
 def load_config(filename='database.ini', section='postgresql'):
-    """_summary_
-
+    """
     Args:
         filename (str, optional): filename for the ini file. Defaults to 'database.ini'.
         section (str, optional): defines the section for the ini file to read from. Defaults to 'postgresql'.
@@ -33,6 +32,7 @@ def load_config(filename='database.ini', section='postgresql'):
         params = parser.items(section)
         for param in params:
             config[param[0]] = param[1]
+
     else:
         raise Exception('Section {0} not found in the {1} file'.format(section, filename))
     
@@ -45,8 +45,10 @@ def connect_config(config) -> psycopg2.extensions.connection:
         with psycopg2.connect(**config) as conn:
             print('Connected to the PostgreSQL server.')
             return conn
+        
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
+
     finally:
         if conn is None:
             raise psycopg2.DatabaseError('Failed to connect to the PostgreSQL database')
@@ -60,21 +62,8 @@ class DBHelper():
     
     __CONN: psycopg2.extensions.connection = None
 
-    # TODO change this to use default parameters, reducing code bloat
-    def __init__(self, filename: str, section: str) -> None:
+    def __init__(self, filename = 'database.ini', section = 'postgresql') -> None:
         _config = load_config(filename=filename, section=section)
-        self.__CONN = connect_config(_config)
-        self.__CONN.autocommit = True
-
-
-    def __init__(self, filename: str) -> None:
-        _config = load_config(filename = filename)
-        self.__CONN = connect_config(_config)
-        self.__CONN.autocommit = True
-
-
-    def __init__(self, section: str) -> None:
-        _config = load_config(section = section)
         self.__CONN = connect_config(_config)
         self.__CONN.autocommit = True
 
@@ -108,7 +97,7 @@ class DBHelper():
         cursor.execute(f"SELECT * FROM callouts WHERE date >= NOW() - INTERVAL '1 day' AND date <= NOW() + INTERVAL '{days} days' ORDER BY date ASC;")
         self.__CONN.commit()
 
-        return cursor.fetchall() # No idea if this is actually returning a list
+        return cursor.fetchall()
     
 
     def add_callout(self, user_id: int, callout: datetime.date, reason: str, nickname: str) -> None:
