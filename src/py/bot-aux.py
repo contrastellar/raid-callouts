@@ -5,6 +5,7 @@ This automation will be run on a daily basis, through a cron job + docker.
 
 @author: Gabriella 'contrastellar' Agathon
 """
+import os
 import discord
 import helper.db_helper
 
@@ -31,6 +32,11 @@ NUMBER_OF_DAYS = 7
 
 @client.event
 async def on_ready():
+    # Exit without pushing anything to the channel/guild
+    if 'RAID_CALLOUTS_DEV' in os.environ:
+        await client.close()
+        return
+    
     print(f'{client.user} has connected.')
 
     GUILD = client.get_guild(FA_GUILD_ID)
@@ -43,4 +49,3 @@ async def on_ready():
 
 TOKEN = open('discord.token', encoding='utf-8').read()
 client.run(TOKEN)
-
