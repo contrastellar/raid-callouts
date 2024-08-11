@@ -90,7 +90,7 @@ class DBHelper():
         Destructor for the DBHelper class
         No need to do anything here
         """
-        self.__CONN.close()
+        # self.__CONN.close()
         pass
 
 
