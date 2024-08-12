@@ -101,6 +101,14 @@ class DBHelper():
     
 
     def add_callout(self, user_id: int, callout: datetime.date, reason: str, nickname: str) -> None:
+        """Add a callout to the database
+
+        Args:
+            user_id (int): the Discord UUID of the user adding things to the db
+            callout (datetime.date): The day of the callout
+            reason (str): The reason of the callout
+            nickname (str): The server(guild) nickname of the user who is making the callout
+        """
         cursor = self.__CONN.cursor()
 
         cursor.execute("INSERT INTO callouts (user_id, date, reason, nickname) VALUES (%s, %s, %s, %s)", (user_id, callout, reason, nickname))
@@ -110,6 +118,12 @@ class DBHelper():
     
 
     def remove_callout(self, user_id: int, callout: datetime.datetime) -> None:
+        """Remove a callout based on user + date, which form the primary key in the db
+
+        Args:
+            user_id (int): The Discord UUID of the user removing something from the db
+            callout (datetime.datetime): The date of the callout
+        """
         cursor = self.__CONN.cursor()
 
         cursor.execute("DELETE FROM callouts WHERE user_id = %s AND date = %s", (user_id, callout))
@@ -118,21 +132,40 @@ class DBHelper():
         return
     
     def format_list_of_callouts(self, callouts: list) -> str:
+        """Format the python list of callouts.
+
+        Args:
+            callouts (list): The list that needs to be formatted
+
+        Returns:
+            str: The formatted list
+        """
         length = len(callouts)
         output = ''
         if length == 0:
             return 'No callouts found for the requested timeframe'
         
         for entry in callouts:
-            i: int = 0
+            # Using basic for-loop logic
+            # Entry is the first "dimension" of the list, 
+            # Item is the second dimension
+            # Because we use "for" in line 148, we don't need
+            # to worry about looping or counting
+            #
+            #
+            # This follows the order of columns in the database
+            # UID, Date, Reason, Nickname
+            i: int = 0  # counter for second dimension, to keep track of things,
+                        # and enable 'skipping' of the user_id column
             for item in entry:
                 if i == 0:
-                    # Skip the user_id column
+                    # !!ALWAYS Skip the user_id column
                     i += 1
                     continue
                 elif i == 1 or i == 2:
                     output += f'{item} -- '
                 else:
+                    # Finally, append the nickname at the very end
                     output += f'{item}\n'
                 i += 1
 
