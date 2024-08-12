@@ -162,7 +162,16 @@ class DBHelper():
                     # !!ALWAYS Skip the user_id column
                     i += 1
                     continue
-                elif i == 1 or i == 2:
+                elif i == 1:
+                    # Format the "date" line depending on if 
+                    # the callout is occuring today or not
+                    if datetime.date.today() == item:
+                        output += f'TODAY -- '
+                    else:
+                        output += f'{item} -- '
+
+                elif i == 2:
+                    # Append the "Reason" line
                     output += f'{item} -- '
                 else:
                     # Finally, append the nickname at the very end
