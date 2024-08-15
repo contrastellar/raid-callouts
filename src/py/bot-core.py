@@ -17,22 +17,8 @@ from discord.ext import commands
 import helper.request_helper, helper.db_helper
 
 DAYS_FOR_CALLOUTS = 7
-NUM_COL_PER_CALLOUT = 4
 
 DATABASE_CONN = None
-# Guild is Errai, my private server
-# Channel is #dev, in Errai
-ERRAI_GUILD_ID = int(477298331777761280)
-ERRAI_CHANNEL_ID = int(927271992216920146)
-
-FA_GUILD_ID = int(865781604881530940)
-FA_CALLOUT_CHANNEL_ID = int(888844785274724362)
-
-# To be used for the optional commands -- !add_report and !remove_report
-FFLOGS_URL = 'https://www.fflogs.com/api/v2/client' # FIXME needs to be loaded from a file
-FFLOGS_TOKEN = '' # FIXME needs to be loaded from a file
-FFLOGS_USER = '' # FIXME needs to be loaded from a file
-
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -98,9 +84,6 @@ args: argparse.Namespace = parser.parse_args()
 # To be used for reading/writing to the database 
 # #will not handle the parsing of the returns from the db
 DATABASE_CONN = helper.db_helper.DBHelper(args.database)
-
-# To be used for the optional commands -- !add_report and !remove_report, and will write to the database for the !pulls command
-REQUESTS_HELPER = REQUESTS_HELPER = helper.request_helper.RequestsHelper(FFLOGS_URL, FFLOGS_TOKEN, FFLOGS_USER)
 
 TOKEN = open(args.token, encoding='utf-8').read()
 client.run(TOKEN)
