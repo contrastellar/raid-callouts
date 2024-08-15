@@ -1,13 +1,10 @@
 # raid-callouts
 
-
-# Info
-
-
-# Runtime 
-
+`raid-callouts` is a service for collating and centralizing a system for users to 'call out' from raids or DND sessions.
 
 # Installation & Testing
+
+This service is provided as-is by Gabriella "contrastellar" Agathon as-requested by users for their various activities.
 
 # Quickstart (/w conda)
 
@@ -41,7 +38,8 @@ conda activate raid-callouts
 6. You need to provide your own `database.ini` file, that contains your own PSQL database, if you wish to self-host the bot. Otherwise, testing will be done on Pull Request.
 
 # TODO
-- Unsure of what else needs to be done, all requirements that I can think of have been fulfilled.
+
+- All major milestones have been reached or are in PRs.
 
 # Contributing
 
