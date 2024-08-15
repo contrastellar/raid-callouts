@@ -5,6 +5,7 @@ This automation will be run on a daily basis, through a cron job + docker.
 
 @author: Gabriella 'contrastellar' Agathon
 """
+import argparse
 import os
 import discord
 import helper.db_helper
@@ -29,6 +30,14 @@ DATABASE_CONN = helper.db_helper.DBHelper()
 client = discord.Client(intents=intents)
 
 NUMBER_OF_DAYS = 7
+
+parser: argparse.ArgumentParser = argparse.ArgumentParser(prog='callouts core', 
+                        description='The listener for the callouts bot functionality')
+
+parser.add_argument('database')
+parser.add_argument('token')
+parser.add_argument('guild_id')
+parser.add_argument('channel_id')
 
 @client.event
 async def on_ready():
