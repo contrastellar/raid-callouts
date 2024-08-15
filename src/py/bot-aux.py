@@ -34,6 +34,10 @@ NUMBER_OF_DAYS = 7
 async def on_ready():
     # Exit without pushing anything to the channel/guild
     if 'RAID_CALLOUTS_DEV' in os.environ:
+        callouts = DATABASE_CONN.query_callouts(NUMBER_OF_DAYS)
+        formatted_callouts = DATABASE_CONN.format_list_of_callouts(callouts)
+        output = f'Callouts for the next {NUMBER_OF_DAYS} days:\n' + formatted_callouts
+        print(output)
         await client.close()
         return
     
