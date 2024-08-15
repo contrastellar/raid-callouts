@@ -10,6 +10,7 @@ This module will listen to the discord server for two things:
 
 @author: Gabriella 'contrastellar' Agathon
 """
+import argparse
 import discord
 import psycopg2
 from discord.ext import commands
@@ -39,6 +40,11 @@ intents.guild_messages = True
 intents.presences = False
 
 client = commands.Bot(command_prefix='!', intents=intents)
+parser: argparse.ArgumentParser = argparse.ArgumentParser(prog='callouts core', 
+                        description='The listener for the callouts bot functionality')
+
+parser.add_argument('database')
+parser.add_argument('token')
 
 @client.event
 async def on_ready() -> None:
@@ -87,12 +93,14 @@ async def schedule(interaction: discord.Interaction, days: int = DAYS_FOR_CALLOU
     return
 
 
+args: argparse.Namespace = parser.parse_args()
+
 # To be used for reading/writing to the database 
 # #will not handle the parsing of the returns from the db
-DATABASE_CONN = helper.db_helper.DBHelper()
+DATABASE_CONN = helper.db_helper.DBHelper(args.database)
 
 # To be used for the optional commands -- !add_report and !remove_report, and will write to the database for the !pulls command
 REQUESTS_HELPER = REQUESTS_HELPER = helper.request_helper.RequestsHelper(FFLOGS_URL, FFLOGS_TOKEN, FFLOGS_USER)
 
-TOKEN = open('discord.token', encoding='utf-8').read()
+TOKEN = open(args.token, encoding='utf-8').read()
 client.run(TOKEN)
