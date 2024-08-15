@@ -1,6 +1,6 @@
 TODO
-discord.token
-database.ini
+*.token
+*.ini
 *.dat
 __pycache__/
 .pytest_cache/
