@@ -68,12 +68,6 @@ class DBHelper():
         self.__CONN.autocommit = True
 
 
-    def __init__(self) -> None:
-        _config = load_config()
-        self.__CONN = connect_config(_config)
-        self.__CONN.autocommit = True
-
-
     def __del__(self):
         """
         Destructor for the DBHelper class
