@@ -12,14 +12,6 @@ import helper.db_helper
 
 
 DATABASE_CONN = None
-# Guild is Errai, my private server
-# Channel is #dev, in Errai
-ERRAI_GUILD_ID = 477298331777761280 # FIXME needs to be dynamically loaded in the future
-ERRAI_CHANNEL_ID = 927271992216920146 # FIXME needs to be dynamically loaded in the future
-
-# Guild for schedule callouts for FA
-FA_GUILD_ID = 865781604881530940
-FA_CHANNEL_ID = 888844785274724362
 
 intents = discord.Intents.default()
 intents.message_content = True
