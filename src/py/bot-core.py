@@ -64,7 +64,7 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
     except psycopg2.errors.InvalidDatetimeFormat:
         await interaction.response.send_message(f'User {user_nick} -- please format the date as one of the following: \n YYYY-MM-DD \n MM-DD-YYYY \n YYYYMMDD')
     else:
-        await interaction.response.send_message(f'User {user_nick} -- you  added a callout for {date_of_callout} with reason: {reason}')
+        await interaction.response.send_message(f'User {user_nick} -- you added a callout for {date_of_callout} with reason: {reason}')
 
 
 @client.tree.command()
