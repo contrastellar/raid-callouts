@@ -160,7 +160,7 @@ class DBHelper():
                     # Format the "date" line depending on if 
                     # the callout is occuring today or not
                     if datetime.date.today() == item:
-                        output += f'TODAY -- '
+                        output += 'TODAY -- '
                     else:
                         output += f'{item} -- '
 
