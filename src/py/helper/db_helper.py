@@ -125,6 +125,46 @@ class DBHelper():
 
         return
     
+    def formatted_list_of_callouts(self, callouts: list) -> str:
+
+        length = len(callouts)
+        output: str = ''
+
+        # Quick and dirty way to say that there were no callouts found during the query
+        if length == 0:
+            return 'No callouts found for the requested timeframe'
+        
+        for entry in callouts:
+            
+            # this is a bit wonky, but we take the known constant width of each entry (4 columns)
+            # then we use python's range function to turn "item" into an interator
+            # Then we do some funky logic on the entry that we're iterating over
+            # in order to get the proper formatting 
+            for item in range(4):
+                if item == 0:
+                    # skip discord user ID always
+                    continue
+
+                elif item == 1:
+                    # handles the date displaying logic
+                    if datetime.date.today() == entry[1]:
+                        output += 'TODAY -- '
+                    else:
+                        output += f'{entry[1]} -- '
+
+                elif item  == 2:
+                    # in the database, this is actually the "reason" place
+                    # instead of doing that, we call the last column's value
+                    # which is the nickname
+                    # this was requested by Yasu
+                    output += entry[3] + ' -- '
+
+                elif item == 3:
+                    # Finally add the reason for the user's callout
+                    output += entry[2] + "\n"
+
+        return output
+    
     def format_list_of_callouts(self, callouts: list) -> str:
         """Format the python list of callouts.
 
