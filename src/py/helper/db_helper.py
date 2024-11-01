@@ -134,6 +134,7 @@ class DBHelper():
         Returns:
             str: The formatted list
         """
+        raise DeprecationWarning("This method has been deprecated.")
         length = len(callouts)
         output = ''
         if length == 0:
