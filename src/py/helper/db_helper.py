@@ -161,7 +161,8 @@ class DBHelper():
 
                 elif item == 3:
                     # Finally add the reason for the user's callout
-                    output += entry[2] + "\n"
+                    # two line breaks as Yasu requested
+                    output += entry[2] + "\n\n"
 
         return output
     
