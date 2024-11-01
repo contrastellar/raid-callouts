@@ -126,7 +126,14 @@ class DBHelper():
         return
     
     def formatted_list_of_callouts(self, callouts: list) -> str:
+        """Format the python list of callouts.
 
+        Args:
+            callouts (list): The list that needs to be formatted
+
+        Returns:
+            str: The formatted list
+        """
         length = len(callouts)
         output: str = ''
 
@@ -175,43 +182,4 @@ class DBHelper():
         Returns:
             str: The formatted list
         """
-        raise DeprecationWarning("This method has been deprecated.")
-        length = len(callouts)
-        output = ''
-        if length == 0:
-            return 'No callouts found for the requested timeframe'
-        
-        for entry in callouts:
-            # Using basic for-loop logic
-            # Entry is the first "dimension" of the list, 
-            # Item is the second dimension
-            # Because we use "for" in line 148, we don't need
-            # to worry about looping or counting
-            #
-            #
-            # This follows the order of columns in the database
-            # UID, Date, Reason, Nickname
-            i: int = 0  # counter for second dimension, to keep track of things,
-                        # and enable 'skipping' of the user_id column
-            for item in entry:
-                if i == 0:
-                    # !!ALWAYS Skip the user_id column
-                    i += 1
-                    continue
-                elif i == 1:
-                    # Format the "date" line depending on if 
-                    # the callout is occuring today or not
-                    if datetime.date.today() == item:
-                        output += 'TODAY -- '
-                    else:
-                        output += f'{item} -- '
-
-                elif i == 2:
-                    # Append the "Reason" line
-                    output += f'{item} -- '
-                else:
-                    # Finally, append the nickname at the very end
-                    output += f'{item}\n'
-                i += 1
-
-        return output
+        return self.formatted_list_of_callouts(callouts=callouts)
