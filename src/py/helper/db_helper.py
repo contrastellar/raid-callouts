@@ -155,22 +155,23 @@ class DBHelper():
                 elif item == 1:
                     # handles the date displaying logic
                     if datetime.date.today() == entry[1]:
-                        output += 'TODAY -- '
+                        output += '**TODAY** • '
                     else:
-                        output += f'{entry[1]} -- '
+                        output += f'**{entry[1]}** • '
 
                 elif item  == 2:
                     # in the database, this is actually the "reason" place
                     # instead of doing that, we call the last column's value
                     # which is the nickname
                     # this was requested by Yasu
-                    output += entry[3] + ' -- '
+                    output += "**" + entry[3] + '** • '
 
                 elif item == 3:
                     # Finally add the reason for the user's callout
                     # two line breaks as Yasu requested
                     output += entry[2] + "\n---\n"
 
+        output += "END OF MESSAGE"
         return output
     
     def format_list_of_callouts(self, callouts: list) -> str:
