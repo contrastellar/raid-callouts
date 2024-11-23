@@ -83,14 +83,19 @@ async def ping(interaction: discord.Interaction) -> None:
 async def callout(interaction: discord.Interaction, date_of_callout: str, reason: str ='') -> None:
     user_id = interaction.user.id
     user_nick = interaction.user.display_name
+
+    user_char_name = DATABASE_CONN.return_char_name(user_id)
+
     try:
-        DATABASE_CONN.add_callout(user_id=user_id, callout=date_of_callout, reason=reason, nickname=user_nick)
+        DATABASE_CONN.add_callout(user_id=user_id, callout=date_of_callout, reason=reason, nickname=user_nick, char_name=user_char_name)
     except psycopg2.errors.UniqueViolation:
-        await interaction.response.send_message(f'User {user_nick} -- you have already added a callout for {date_of_callout} with reason: {reason}')
+        await interaction.response.send_message(f'User {user_char_name} -- you have already added a callout for {date_of_callout} with reason: {reason}')
     except psycopg2.errors.InvalidDatetimeFormat:
-        await interaction.response.send_message(f'User {user_nick} -- please format the date as one of the following: \n YYYY-MM-DD \n MM-DD-YYYY \n YYYYMMDD')
+        await interaction.response.send_message(f'User {user_char_name} -- please format the date as one of the following: \n YYYY-MM-DD \n MM-DD-YYYY \n YYYYMMDD')
+    except psycopg2.errors.ForeignKeyViolation:
+        await interaction.response.send_message(f'User {user_nick} -- please register with the bot using the following command!\n /registercharacter\n Please use your in-game name!')
     else:
-        await interaction.response.send_message(f'User {user_nick} -- you added a callout for {date_of_callout} with reason: {reason}')
+        await interaction.response.send_message(f'User {user_char_name} -- you added a callout for {date_of_callout} with reason: {reason}')
 
 
 @client.tree.command()
