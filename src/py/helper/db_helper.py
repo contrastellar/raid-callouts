@@ -162,9 +162,9 @@ class DBHelper():
                 elif item  == 2:
                     # in the database, this is actually the "reason" place
                     # instead of doing that, we call the last column's value
-                    # which is the nickname
+                    # which is the char name
                     # this was requested by Yasu
-                    output += "**" + entry[3] + '** • '
+                    output += "**" + entry[4] + '** • '
 
                 elif item == 3:
                     # Finally add the reason for the user's callout
