@@ -61,6 +61,7 @@ class DBHelper():
     """
     
     __CONN: psycopg2.extensions.connection = None
+    isProcedureQueued: bool = False
 
     def __init__(self, filename = 'database.ini', section = 'postgresql') -> None:
         _config = load_config(filename=filename, section=section)
@@ -219,3 +220,22 @@ class DBHelper():
             return ""
         else: 
             return output
+        
+    def number_affected_in_cleanup(self) -> int:
+        cursor = self.__CONN.cursor()
+        cursor.execute(f"SELECT count(*) FROM newcallouts WHERE date < NOW();")
+        
+        return cursor.fetchone()[0]
+
+    def call_cleanup(self, is_okay: bool) -> int:
+
+        number_to_be_affected = self.number_affected_in_cleanup()
+
+        if not is_okay:
+            raise Exception("Not queued properly!")
+        
+        cursor = self.__CONN.cursor()
+        cursor.execute(f"CALL cleanup();")
+        print("Cleanup was called!")
+        return number_to_be_affected
+    
