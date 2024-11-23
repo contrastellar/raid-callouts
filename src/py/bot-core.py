@@ -49,8 +49,8 @@ async def on_ready() -> None:
 async def help(interaction: discord.Interaction) -> None:
     delete_invalidate()
     cleanup_invalidate()
-    output = "Are you having issues with the bot? Please contact contrastellar with any questions!"
-    interaction.response.send_message(output)
+    output = "[Please visit this page for a complete manual on how to use the bot!](https://github.com/contrastellar/raid-callouts/wiki/Help!-(the-manual))"
+    await interaction.response.send_message(output)
     return
 
 @client.tree.command()
@@ -165,9 +165,10 @@ async def validate_cleanup(interaction: discord.Interaction) -> None:
     
     return
 
+@client.tree.command()
 async def invalidate_cleanup(interaction: discord.Interaction) -> None:
     delete_invalidate()
-    invalidate_cleanup()
+    cleanup_invalidate()
 
     await interaction.response.defer(thinking=True)
 
@@ -205,12 +206,13 @@ async def remove_callout(interaction: discord.Interaction, date_of_callout: str)
     cleanup_invalidate()
     user_id = interaction.user.id
     user_nick = interaction.user.display_name
+    userCharName = DATABASE_CONN.return_char_name(user_id)
     try:
         DATABASE_CONN.remove_callout(user_id=user_id, callout=date_of_callout)
     except psycopg2.errors.Error as e:
-        await interaction.response.send_message(f'User {user_nick} -- you have not added a callout for {date_of_callout}')
+        await interaction.response.send_message(f'User {userCharName} -- you have not added a callout for {date_of_callout}')
     else:
-        await interaction.response.send_message(f'User {user_nick} removed a callout for {date_of_callout}')
+        await interaction.response.send_message(f'User {userCharName} removed a callout for {date_of_callout}')
 
 
 @client.tree.command()
