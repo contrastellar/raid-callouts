@@ -88,13 +88,13 @@ class DBHelper():
         """
         cursor = self.__CONN.cursor()
         # Weird query, but it grabs the callouts from the last day to the next X days.
-        cursor.execute(f"SELECT * FROM callouts WHERE date >= NOW() - INTERVAL '1 day' AND date <= NOW() + INTERVAL '{days} days' ORDER BY date ASC;")
+        cursor.execute(f"SELECT * FROM newcallouts WHERE date >= NOW() - INTERVAL '1 day' AND date <= NOW() + INTERVAL '{days} days' ORDER BY date ASC;")
         self.__CONN.commit()
 
         return cursor.fetchall()
     
 
-    def add_callout(self, user_id: int, callout: datetime.date, reason: str, nickname: str) -> None:
+    def add_callout(self, user_id: int, callout: datetime.date, reason: str, nickname: str, char_name: str) -> None:
         """Add a callout to the database
 
         Args:
@@ -105,7 +105,7 @@ class DBHelper():
         """
         cursor = self.__CONN.cursor()
 
-        cursor.execute("INSERT INTO callouts (user_id, date, reason, nickname) VALUES (%s, %s, %s, %s)", (user_id, callout, reason, nickname))
+        cursor.execute("INSERT INTO newcallouts (user_id, date, reason, nickname, charname) VALUES (%s, %s, %s, %s, %s)", (user_id, callout, reason, nickname, char_name))
         self.__CONN.commit()
 
         return
@@ -120,7 +120,7 @@ class DBHelper():
         """
         cursor = self.__CONN.cursor()
 
-        cursor.execute("DELETE FROM callouts WHERE user_id = %s AND date = %s", (user_id, callout))
+        cursor.execute("DELETE FROM newcallouts WHERE user_id = %s AND date = %s", (user_id, callout))
         self.__CONN.commit()
 
         return
