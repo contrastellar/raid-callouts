@@ -17,6 +17,7 @@ from discord.ext import commands
 import helper.request_helper, helper.db_helper
 
 DAYS_FOR_CALLOUTS = 7
+CONTRASTELLAR = 181187505448681472
 
 DATABASE_CONN = None
 
@@ -145,7 +146,6 @@ async def cleanup(interaction: discord.Interaction) -> None:
 @client.tree.command()
 async def validate_cleanup(interaction: discord.Interaction) -> None:
     delete_invalidate()
-    user_id = interaction.user.id
     user_nickname = interaction.user.nick
     await interaction.response.defer(thinking=True)
     print(f"{user_nickname} has called validate_cleanup!\n\nCalling now.")
@@ -156,7 +156,7 @@ async def validate_cleanup(interaction: discord.Interaction) -> None:
         number_rows_affected = DATABASE_CONN.call_cleanup(DATABASE_CONN.isProcedureQueued)
     except Exception as e:
         print(e)
-        await interaction.followup.send("Something happened! This message is to inform <@181187505448681472> of this error!")
+        await interaction.followup.send(f"Something happened! This message is to inform <@{CONTRASTELLAR}> of this error!")
         return
     
     print(f"cleanup should be complete. Setting queue variable to False")
