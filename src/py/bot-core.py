@@ -38,6 +38,40 @@ async def on_ready() -> None:
     print(f'{client.user} has connected to Discord!')
     return
 
+@client.tree.command()
+async def help(interaction: discord.Interaction) -> None:
+    output = "Are you having issues with the bot? Please contact contrastellar with any questions!"
+    interaction.response.send_message(output)
+    return
+
+@client.tree.command()
+async def registercharacter(interaction: discord.Interaction, character_name: str) -> None:
+    user_id = interaction.user.id
+    user_nick = interaction.user.display_name
+
+    try:
+        DATABASE_CONN.register_char_name(user_id, character_name)
+    except psycopg2.errors.UniqueViolation:
+        await interaction.response.send_message(f'User {user_nick} -- you have already registered a character! Please contact contrastellar with questions!')
+    else:
+        await interaction.response.send_message(f'User {user_nick} -- you have registered your discord account with {character_name}! Please contact contrastellar with questions!')
+    return
+
+
+@client.tree.command()
+async def checkcharname(interaction: discord.Interaction) -> None:
+    charname: str = DATABASE_CONN.return_char_name(interaction.user.id)
+    
+    if charname == "":
+        await interaction.response.send_message("You have not registered! Please do with /registercharacter")
+        return
+    if interaction.user.id == 151162055142014976:
+        await interaction.response.send_message("You are: " + charname + "... in case you forgot.")
+        return
+    
+    await interaction.response.send_message("You are: " + charname)
+    return
+
 
 @client.tree.command()
 async def ping(interaction: discord.Interaction) -> None:
