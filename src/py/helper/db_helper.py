@@ -221,6 +221,11 @@ class DBHelper():
         else: 
             return output
         
+    def remove_registration(self, uid) -> None:
+        cursor = self.__CONN.cursor()
+        cursor.execute(f"DELETE FROM charnames WHERE uid = {uid}")
+        return
+        
     def number_affected_in_cleanup(self) -> int:
         cursor = self.__CONN.cursor()
         cursor.execute(f"SELECT count(*) FROM newcallouts WHERE date < NOW();")
