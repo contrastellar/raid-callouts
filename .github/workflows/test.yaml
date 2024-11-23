@@ -41,4 +41,4 @@ jobs:
               shell: bash -l {0}
               run: |
                 conda activate test-helper-module
-                python -m pytest src/py/db-helper-tests.py
+                python -m pytest ./src/py/db-helper-tests.py
