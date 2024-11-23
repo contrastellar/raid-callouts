@@ -70,7 +70,7 @@ async def registercharacter(interaction: discord.Interaction, character_name: st
 
 
 @client.tree.command()
-async def checkcharname(interaction: discord.Interaction) -> None:
+async def check_char_name(interaction: discord.Interaction) -> None:
     delete_invalidate()
     cleanup_invalidate()
     charname: str = DATABASE_CONN.return_char_name(interaction.user.id)
@@ -87,7 +87,7 @@ async def checkcharname(interaction: discord.Interaction) -> None:
 
 
 @client.tree.command()
-async def removeregistration(interaction: discord.Interaction) -> None:
+async def remove_registration(interaction: discord.Interaction) -> None:
     delete_invalidate()
     cleanup_invalidate()
     await interaction.response.send_message("To remove your registration with the boss, please run the `/confirm_unregister` command\nPlease be aware that this will also remove all of your callouts from the bot! ***This is in an irreversable action!***")
@@ -96,7 +96,7 @@ async def removeregistration(interaction: discord.Interaction) -> None:
 
 
 @client.tree.command()
-async def confirm_unregister(interaction: discord.Interaction) -> None:
+async def validate_unregister(interaction: discord.Interaction) -> None:
     cleanup_invalidate()
 
     userID = interaction.user.id
@@ -136,7 +136,7 @@ async def cleanup(interaction: discord.Interaction) -> None:
     delete_invalidate()
     cleanup_invalidate()
     numberToBeAffected: int = DATABASE_CONN.number_affected_in_cleanup()
-    await interaction.response.send_message(f"Is the bot being weird or slow? You can try the `/validate_cleanup` command to clear out old database entries!\nBe warned that this is an admin-level command, and may have unintended side effects!\n{numberToBeAffected} rows will be affected by the `/validate_cleanup` command!")
+    await interaction.response.send_message(f"Is the bot being weird or slow? You can try the `/validate_cleanup` command to clear out old database entries!\nBe warned that this is an admin-level command, and may have unintended side effects!\n{numberToBeAffected} rows will be affected by the `/validate_cleanup` command!\nThese entries are all in the past.")
     DATABASE_CONN.isProcedureQueued = True
     print(f"Bot has been primed for cleanup!")
     return
