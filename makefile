@@ -3,3 +3,6 @@ compose_up:
 
 clean:
 	docker compose down
+
+run_listener:
+	python ./src/py/bot-core.py xiv-database.ini xiv-discord.token
