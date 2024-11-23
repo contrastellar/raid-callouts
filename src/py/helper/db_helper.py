@@ -210,6 +210,7 @@ class DBHelper():
             String; either character name or empty.
         """
         cursor = self.__CONN.cursor()
+        # was getting weird index error on this line due to tuples, so we're using an f-string
         cursor.execute(f"SELECT charname FROM charnames WHERE uid = {uid}")
         output: str = ""
         try:
