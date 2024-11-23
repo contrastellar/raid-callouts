@@ -35,7 +35,7 @@ class TestClass():
         assert remove_callout is None
 
     def test_remove_registration(self) -> None:
-        registration = self.DATABASE_CONN.remove_registration(uid=1)
+        registration = self.DATABASE_CONN.remove_registration(uid=1, isOkay=True)
         assert registration is None
 
     def test_format_list_of_callouts(self) -> None:
