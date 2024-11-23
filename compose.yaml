@@ -1,7 +1,13 @@
 services:
-  listener:
+  xiv-listener:
     build: .
-    command: ["python", "src/py/bot-core.py"]
-  poster:
+    command: ["python", "src/py/bot-core.py", "xiv-database.ini", "xiv-discord.token"]
+  xiv-poster:
     build: .
-    command: ["python", "src/py/bot-aux.py"]
+    command: ["python", "src/py/bot-aux.py", "xiv-database.ini", "xiv-discord.token", "865781604881530940", "888844785274724362"]
+  # dnd-listener:
+  #   build: .
+  #   command: ["python", "src/py/bot-core.py", "dnd-database.ini", "dnd-discord.token"]
+  # dnd-poster:
+  #   build: .
+  #   command: ["python", "src/py/bot-aux.py", "dnd-database.ini", "dnd-discord.token", "477298331777761280", "927271992216920146"]

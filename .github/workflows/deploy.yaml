@@ -57,16 +57,27 @@ jobs:
                 key: ${{ secrets.HOST_PRIVATEKEY }}
                 known_hosts: 'placeholder'
 
-            - name: add database.ini
+            - name: add xiv database.ini
               run: |
                 cd $GITHUB_WORKSPACE/
                 touch database.ini
-                echo "${{ secrets.DATABASE_INI }}" >> database.ini
+                echo "${{ secrets.DATABASE_INI }}" >> xiv-database.ini
 
-            - name: add discord token
+            - name: add ffxiv discord token
               run: |
                 cd $GITHUB_WORKSPACE/
-                echo "${{ secrets.DISCORD_TOKEN }}" >> discord.token
+                echo "${{ secrets.DISCORD_TOKEN }}" >> xiv-discord.token
+
+            - name: add dnd database.ini
+              run: |
+                cd $GITHUB_WORKSPACE/
+                touch database.ini
+                echo "${{ secrets.DND_DATABASE_INI }}" >> dnd-database.ini
+
+            - name: add dnd discord token
+              run: |
+                cd $GITHUB_WORKSPACE/
+                echo "${{ secrets.DND_DISCORD_TOKEN }}" >> dnd-discord.token
 
             - name: add known hosts to runner
               run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts

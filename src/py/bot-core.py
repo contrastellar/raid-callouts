@@ -10,28 +10,15 @@ This module will listen to the discord server for two things:
 
 @author: Gabriella 'contrastellar' Agathon
 """
+import argparse
 import discord
 import psycopg2
 from discord.ext import commands
 import helper.request_helper, helper.db_helper
 
 DAYS_FOR_CALLOUTS = 7
-NUM_COL_PER_CALLOUT = 4
 
 DATABASE_CONN = None
-# Guild is Errai, my private server
-# Channel is #dev, in Errai
-ERRAI_GUILD_ID = int(477298331777761280)
-ERRAI_CHANNEL_ID = int(927271992216920146)
-
-FA_GUILD_ID = int(865781604881530940)
-FA_CALLOUT_CHANNEL_ID = int(888844785274724362)
-
-# To be used for the optional commands -- !add_report and !remove_report
-FFLOGS_URL = 'https://www.fflogs.com/api/v2/client' # FIXME needs to be loaded from a file
-FFLOGS_TOKEN = '' # FIXME needs to be loaded from a file
-FFLOGS_USER = '' # FIXME needs to be loaded from a file
-
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -39,6 +26,15 @@ intents.guild_messages = True
 intents.presences = False
 
 client = commands.Bot(command_prefix='!', intents=intents)
+parser: argparse.ArgumentParser = argparse.ArgumentParser(prog='callouts core', 
+                        description='The listener for the callouts bot functionality')
+
+parser.add_argument('database')
+parser.add_argument('token')
+
+def cleanup_invalidate() -> None:
+    DATABASE_CONN.isProcedureQueued = False
+    return
 
 @client.event
 async def on_ready() -> None:
@@ -46,29 +42,118 @@ async def on_ready() -> None:
     print(f'{client.user} has connected to Discord!')
     return
 
+@client.tree.command()
+async def help(interaction: discord.Interaction) -> None:
+    cleanup_invalidate()
+    output = "Are you having issues with the bot? Please contact contrastellar with any questions!"
+    interaction.response.send_message(output)
+    return
+
+@client.tree.command()
+async def registercharacter(interaction: discord.Interaction, character_name: str) -> None:
+    cleanup_invalidate()
+    user_id = interaction.user.id
+    user_nick = interaction.user.display_name
+
+    try:
+        DATABASE_CONN.register_char_name(user_id, character_name)
+    except psycopg2.errors.UniqueViolation:
+        await interaction.response.send_message(f'User {user_nick} -- you have already registered a character! Please contact contrastellar with questions!')
+    else:
+        await interaction.response.send_message(f'User {user_nick} -- you have registered your discord account with {character_name}! Please contact contrastellar with questions!')
+    return
+
+
+@client.tree.command()
+async def checkcharname(interaction: discord.Interaction) -> None:
+    cleanup_invalidate()
+    charname: str = DATABASE_CONN.return_char_name(interaction.user.id)
+    
+    if charname == "":
+        await interaction.response.send_message("You have not registered! Please do with /registercharacter")
+        return
+    if interaction.user.id == 151162055142014976:
+        await interaction.response.send_message("You are: " + charname + "... in case you forgot.")
+        return
+    
+    await interaction.response.send_message("You are: " + charname)
+    return
+
 
 @client.tree.command()
 async def ping(interaction: discord.Interaction) -> None:
+    cleanup_invalidate()
     user_id = interaction.user.id
     await interaction.response.send_message(f'Pong! {user_id}')
+    return
+
+
+@client.tree.command()
+async def cleanup(interaction: discord.Interaction) -> None:
+    cleanup_invalidate()
+    numberToBeAffected: int = DATABASE_CONN.number_affected_in_cleanup()
+    await interaction.response.send_message(f"Is the bot being weird or slow? You can try the `/validate_cleanup` command to clear out old database entries!\nBe warned that this is an admin-level command, and may have unintended side effects!\n{numberToBeAffected} rows will be affected by the `/validate_cleanup` command!")
+    DATABASE_CONN.isProcedureQueued = True
+    print(f"Bot has been primed for cleanup!")
+    return
+
+
+@client.tree.command()
+async def validate_cleanup(interaction: discord.Interaction) -> None:
+    user_id = interaction.user.id
+    user_nickname = interaction.user.nick
+    await interaction.response.defer(thinking=True)
+    print(f"{user_nickname} has called validate_cleanup!\n\nCalling now.")
+
+    number_rows_affected: int
+
+    try: 
+        number_rows_affected = DATABASE_CONN.call_cleanup(DATABASE_CONN.isProcedureQueued)
+    except Exception as e:
+        print(e)
+        await interaction.followup.send("Something happened! This message is to inform <@181187505448681472> of this error!")
+        return
+    
+    print(f"cleanup should be complete. Setting queue variable to False")
+    DATABASE_CONN.isProcedureQueued = False
+    await interaction.followup.send(f"Database has been cleaned!\n\n{number_rows_affected} rows have been purged!")
+    
+    return
+
+async def invalidate_cleanup(interaction: discord.Interaction) -> None:
+    await interaction.response.defer(thinking=True)
+
+    print(f"{interaction.user.id} has called the invalidate command!")
+    DATABASE_CONN.isProcedureQueued = False
+    print(f"Cleanup has been invalidated!")
+    await interaction.followup.send("The queued action has been cancelled!")
+
+    return
 
 
 @client.tree.command()
 async def callout(interaction: discord.Interaction, date_of_callout: str, reason: str ='') -> None:
+    cleanup_invalidate()
     user_id = interaction.user.id
     user_nick = interaction.user.display_name
+
+    user_char_name = DATABASE_CONN.return_char_name(user_id)
+
     try:
-        DATABASE_CONN.add_callout(user_id=user_id, callout=date_of_callout, reason=reason, nickname=user_nick)
+        DATABASE_CONN.add_callout(user_id=user_id, callout=date_of_callout, reason=reason, nickname=user_nick, char_name=user_char_name)
     except psycopg2.errors.UniqueViolation:
-        await interaction.response.send_message(f'User {user_nick} -- you have already added a callout for {date_of_callout} with reason: {reason}')
+        await interaction.response.send_message(f'User {user_char_name} -- you have already added a callout for {date_of_callout} with reason: {reason}')
     except psycopg2.errors.InvalidDatetimeFormat:
-        await interaction.response.send_message(f'User {user_nick} -- please format the date as one of the following: \n YYYY-MM-DD \n MM-DD-YYYY \n YYYYMMDD')
+        await interaction.response.send_message(f'User {user_char_name} -- please format the date as one of the following: \n YYYY-MM-DD \n MM-DD-YYYY \n YYYYMMDD')
+    except psycopg2.errors.ForeignKeyViolation:
+        await interaction.response.send_message(f'User {user_nick} -- please register with the bot using the following command!\n /registercharacter\n Please use your in-game name!')
     else:
-        await interaction.response.send_message(f'User {user_nick} -- you added a callout for {date_of_callout} with reason: {reason}')
+        await interaction.response.send_message(f'User {user_char_name} -- you added a callout for {date_of_callout} with reason: {reason}')
 
 
 @client.tree.command()
 async def remove_callout(interaction: discord.Interaction, date_of_callout: str) -> None:
+    cleanup_invalidate()
     user_id = interaction.user.id
     user_nick = interaction.user.display_name
     try:
@@ -81,18 +166,18 @@ async def remove_callout(interaction: discord.Interaction, date_of_callout: str)
 
 @client.tree.command()
 async def schedule(interaction: discord.Interaction, days: int = DAYS_FOR_CALLOUTS) -> None:
+    cleanup_invalidate()
     callouts: list = DATABASE_CONN.query_callouts(days=days)
-    callouts: str = DATABASE_CONN.format_list_of_callouts(callouts)
+    callouts: str = DATABASE_CONN.formatted_list_of_callouts(callouts)
     await interaction.response.send_message(f'Callouts for the next {days} days:\n{callouts}')
     return
 
 
+args: argparse.Namespace = parser.parse_args()
+
 # To be used for reading/writing to the database 
 # #will not handle the parsing of the returns from the db
-DATABASE_CONN = helper.db_helper.DBHelper()
+DATABASE_CONN = helper.db_helper.DBHelper(args.database)
 
-# To be used for the optional commands -- !add_report and !remove_report, and will write to the database for the !pulls command
-REQUESTS_HELPER = REQUESTS_HELPER = helper.request_helper.RequestsHelper(FFLOGS_URL, FFLOGS_TOKEN, FFLOGS_USER)
-
-TOKEN = open('discord.token', encoding='utf-8').read()
+TOKEN = open(args.token, encoding='utf-8').read()
 client.run(TOKEN)
