@@ -35,11 +35,11 @@ jobs:
               run: |
                     cd $GITHUB_WORKSPACE/
                     touch database.ini
-                    echo "${{ secrets.DATABASE_INI }}" >> database.ini
+                    echo "${{ secrets.DATABASE_INI }}" >> xiv-database.ini
 
             - name: Run tests
               shell: bash -l {0}
               run: |
-                cd $GITHUB_WORKSPACE}}
+                cd $GITHUB_WORKSPACE
                 conda activate test-helper-module
                 python -m pytest ./src/py/db-helper-tests.py
