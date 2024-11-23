@@ -1,12 +1,13 @@
 """
 This module is the listener to discord.
 This module will listen to the discord server for two things:
-1. the !schedule command -- which will report the current callouts for the next 7 days
-2. the !callout command -- which will allow users to add a new scheduled callout
-3. Optional -- the !pulls command -- which will report the total pulls for the current raid
-4. Optional -- the !add_report command -- which will allow users to add a new report, to be parsed by the database
-5. optional -- the !remove_report command -- which will do the opposite of !add_report, it will require the URL of the report to be removed
-6. 
+1. the /schedule command -- which will report the current callouts for the next X days, where X is either supplied or is the default of 7
+2. the /callout command -- which will allow users to add a new scheduled callout
+3. a /ping command, to test the bot's current status!
+4. a /registercharacter command, to allow users to register their character's name independently of their server nickname
+5. a /checkcharname command, to allow users to verify their character's name
+6. a /remove_callout command, to allow users to remove callouts that are no longer necessary
+7. a /help command, to direct users to the github for this bot!
 
 @author: Gabriella 'contrastellar' Agathon
 """
