@@ -62,6 +62,7 @@ class DBHelper():
     
     __CONN: psycopg2.extensions.connection = None
     isProcedureQueued: bool = False
+    isUnregisterQueued: bool = False
 
     def __init__(self, filename = 'database.ini', section = 'postgresql') -> None:
         _config = load_config(filename=filename, section=section)
@@ -201,7 +202,7 @@ class DBHelper():
 
         return
     
-    def return_char_name(self, uid) -> str:
+    def return_char_name(self, uid:int) -> str:
         """Utility method to return the character name based on a specific discord ID
 
         Arguments:
@@ -221,8 +222,12 @@ class DBHelper():
         else: 
             return output
         
-    def remove_registration(self, uid) -> None:
+    def remove_registration(self, uid: int, isOkay: bool) -> None:
         cursor = self.__CONN.cursor()
+
+        # need to remove all callouts!
+        cursor.execute(f"DELETE FROM newcallouts WHERE user_id = {uid}")
+
         cursor.execute(f"DELETE FROM charnames WHERE uid = {uid}")
         return
         
