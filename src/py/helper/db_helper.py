@@ -102,6 +102,7 @@ class DBHelper():
             callout (datetime.date): The day of the callout
             reason (str): The reason of the callout
             nickname (str): The server(guild) nickname of the user who is making the callout
+            char_name (str): The character name (as supplied from registration) of the user inserting a callout
         """
         cursor = self.__CONN.cursor()
 
@@ -186,6 +187,13 @@ class DBHelper():
         return self.formatted_list_of_callouts(callouts=callouts)
     
     def register_char_name(self, uid: int, char_name: str) -> None:
+        """ allows users to register their character name with the bot, allowing silly nicknames to be used independent of their
+            character's name
+
+        Arguments:
+            uid -- Discord User ID of the user to be registered
+            char_name -- User-supplied character name, to be inserted into the table
+        """        
         cursor = self.__CONN.cursor()
         cursor.execute("INSERT INTO charnames (uid, charname) VALUES (%s, %s)", (uid, char_name))
         self.__CONN.commit()
@@ -193,6 +201,14 @@ class DBHelper():
         return
     
     def return_char_name(self, uid) -> str:
+        """Utility method to return the character name based on a specific discord ID
+
+        Arguments:
+            uid -- Discord User ID of the user to be queried
+
+        Returns:
+            String; either character name or empty.
+        """
         cursor = self.__CONN.cursor()
         cursor.execute(f"SELECT charname FROM charnames WHERE uid = {uid}")
         output: str = ""
