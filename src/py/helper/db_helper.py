@@ -184,3 +184,21 @@ class DBHelper():
             str: The formatted list
         """
         return self.formatted_list_of_callouts(callouts=callouts)
+    
+    def register_char_name(self, uid: int, char_name: str) -> None:
+        cursor = self.__CONN.cursor()
+        cursor.execute("INSERT INTO charnames (uid, charname) VALUES (%s, %s)", (uid, char_name))
+        self.__CONN.commit()
+
+        return
+    
+    def return_char_name(self, uid) -> str:
+        cursor = self.__CONN.cursor()
+        cursor.execute(f"SELECT charname FROM charnames WHERE uid = {uid}")
+        output: str = ""
+        try:
+            output = cursor.fetchone()[0]
+        except TypeError:
+            return ""
+        else: 
+            return output
