@@ -202,7 +202,7 @@ class DBHelper():
 
         return
     
-    def return_char_name(self, uid:int) -> str:
+    def return_char_name(self, uid: int) -> str:
         """Utility method to return the character name based on a specific discord ID
 
         Arguments:
