@@ -40,6 +40,7 @@ def cleanup_invalidate() -> None:
 
 def delete_invalidate() -> None:
     DATABASE_CONN.isUnregisterQueued = False
+    return
 
 @client.event
 async def on_ready() -> None:
@@ -65,9 +66,10 @@ async def registercharacter(interaction: discord.Interaction, character_name: st
     try:
         DATABASE_CONN.register_char_name(user_id, character_name)
     except psycopg2.errors.UniqueViolation:
-        await interaction.response.send_message(f'User {user_nick} -- you have already registered a character! Please contact contrastellar with questions!')
+        char_name = DATABASE_CONN.return_char_name(user_id)
+        await interaction.response.send_message(f'User {char_name} -- you have already registered a character!')
     else:
-        await interaction.response.send_message(f'User {user_nick} -- you have registered your discord account with {character_name}! Please contact contrastellar with questions!')
+        await interaction.response.send_message(f'{user_nick} -- you have registered your discord account with {character_name}!')
     return
 
 
@@ -78,7 +80,7 @@ async def check_char_name(interaction: discord.Interaction) -> None:
     charname: str = DATABASE_CONN.return_char_name(interaction.user.id)
     
     if charname == "":
-        await interaction.response.send_message("You have not registered! Please do with /registercharacter")
+        await interaction.response.send_message("You have not registered! Please do with `/registercharacter`")
         return
     if interaction.user.id == 151162055142014976:
         await interaction.response.send_message("You are: " + charname + "... in case you forgot.")
@@ -192,13 +194,13 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
     try:
         DATABASE_CONN.add_callout(user_id=user_id, callout=date_of_callout, reason=reason, nickname=user_nick, char_name=user_char_name)
     except psycopg2.errors.UniqueViolation:
-        await interaction.response.send_message(f'User {user_char_name} -- you have already added a callout for {date_of_callout} with reason: {reason}')
+        await interaction.response.send_message(f'{user_char_name} -- you have already added a callout for {date_of_callout} with reason: {reason}')
     except psycopg2.errors.InvalidDatetimeFormat:
-        await interaction.response.send_message(f'User {user_char_name} -- please format the date as one of the following: \n YYYY-MM-DD \n MM-DD-YYYY \n YYYYMMDD')
+        await interaction.response.send_message(f'{user_char_name} -- please format the date as one of the following: \nYYYY-MM-DD \nMM-DD-YYYY \nYYYYMMDD')
     except psycopg2.errors.ForeignKeyViolation:
-        await interaction.response.send_message(f'User {user_nick} -- please register with the bot using the following command!\n /registercharacter\n Please use your in-game name!')
+        await interaction.response.send_message(f'{user_nick} -- please register with the bot using the following command!\n`/registercharacter`\n Please use your in-game name!')
     else:
-        await interaction.response.send_message(f'User {user_char_name} -- you added a callout for {date_of_callout} with reason: {reason}')
+        await interaction.response.send_message(f'{user_char_name} -- you added a callout for {date_of_callout} with reason: {reason}')
 
 
 @client.tree.command()
@@ -211,18 +213,19 @@ async def remove_callout(interaction: discord.Interaction, date_of_callout: str)
     try:
         DATABASE_CONN.remove_callout(user_id=user_id, callout=date_of_callout)
     except psycopg2.errors.Error:
-        await interaction.response.send_message(f'User {userCharName} -- you have not added a callout for {date_of_callout}')
+        await interaction.response.send_message(f'{userCharName} -- you have not added a callout for {date_of_callout}')
     else:
-        await interaction.response.send_message(f'User {userCharName} removed a callout for {date_of_callout}')
+        await interaction.response.send_message(f'{userCharName} removed a callout for {date_of_callout}')
 
 
 @client.tree.command()
 async def schedule(interaction: discord.Interaction, days: int = DAYS_FOR_CALLOUTS) -> None:
     delete_invalidate()
     cleanup_invalidate()
+    interaction.response.defer(thinking=True)
     callouts: list = DATABASE_CONN.query_callouts(days=days)
     callouts: str = DATABASE_CONN.formatted_list_of_callouts(callouts)
-    await interaction.response.send_message(f'Callouts for the next {days} days:\n{callouts}')
+    await interaction.followup.send(f'Callouts for the next {days} days:\n{callouts}')
     return
 
 
