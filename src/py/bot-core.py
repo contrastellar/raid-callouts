@@ -209,7 +209,7 @@ async def remove_callout(interaction: discord.Interaction, date_of_callout: str)
     userCharName = DATABASE_CONN.return_char_name(user_id)
     try:
         DATABASE_CONN.remove_callout(user_id=user_id, callout=date_of_callout)
-    except psycopg2.errors.Error as e:
+    except psycopg2.errors.Error:
         await interaction.response.send_message(f'User {userCharName} -- you have not added a callout for {date_of_callout}')
     else:
         await interaction.response.send_message(f'User {userCharName} removed a callout for {date_of_callout}')
