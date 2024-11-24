@@ -30,7 +30,7 @@ parser.add_argument('token')
 parser.add_argument('guild_id', type=int)
 parser.add_argument('channel_id', type=int)
 
-args = parser.parse_args()
+args: argparse.Namespace = parser.parse_args()
 
 @client.event
 async def on_ready():
@@ -45,12 +45,12 @@ async def on_ready():
     
     print(f'{client.user} has connected.')
     print(args.guild_id)
-    GUILD: discord.Guild = client.get_guild(args.guild_id)
-    CHANNEL: discord.abc.GuildChannel = GUILD.get_channel(args.channel_id)
+    guild: discord.Guild = client.get_guild(args.guild_id)
+    channel: discord.TextChannel = guild.get_channel(args.channel_id)
     callouts = DATABASE_CONN.query_callouts(NUMBER_OF_DAYS)
     formatted_callouts = DATABASE_CONN.formatted_list_of_callouts(callouts)
     output = f'Callouts for the next {NUMBER_OF_DAYS} days:\n' + formatted_callouts
-    await CHANNEL.send(output)
+    await channel.send(output)
     await client.close() # Another way to exit, a little bit cleaner than exit(0)
     return
 
