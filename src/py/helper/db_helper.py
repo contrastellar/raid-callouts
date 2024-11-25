@@ -61,8 +61,8 @@ class DBHelper():
     """
     
     __CONN: psycopg2.extensions.connection = None
-    isProcedureQueued: bool = False
-    isUnregisterQueued: bool = False
+    is_procedure_queued: bool = False
+    is_unregister_queued: bool = False
 
     def __init__(self, filename = 'database.ini', section = 'postgresql') -> None:
         _config = load_config(filename=filename, section=section)

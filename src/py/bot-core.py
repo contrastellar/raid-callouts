@@ -20,7 +20,7 @@ import helper.request_helper, helper.db_helper
 DAYS_FOR_CALLOUTS = 7
 CONTRASTELLAR = 181187505448681472
 
-DATABASE_CONN = None
+DATABASE_CONN: helper.db_helper.DBHelper = None
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -35,11 +35,11 @@ parser.add_argument('database')
 parser.add_argument('token')
 
 def cleanup_invalidate() -> None:
-    DATABASE_CONN.isProcedureQueued = False
+    DATABASE_CONN.is_procedure_queued = False
     return
 
 def delete_invalidate() -> None:
-    DATABASE_CONN.isUnregisterQueued = False
+    DATABASE_CONN.is_unregister_queued = False
     return
 
 @client.event
