@@ -168,6 +168,7 @@ async def validate_cleanup(interaction: discord.Interaction) -> None:
     
     return
 
+
 @client.tree.command()
 async def invalidate_cleanup(interaction: discord.Interaction) -> None:
     delete_invalidate()
@@ -183,7 +184,7 @@ async def invalidate_cleanup(interaction: discord.Interaction) -> None:
 
 
 @client.tree.command()
-async def callout(interaction: discord.Interaction, date_of_callout: str, reason: str ='') -> None:
+async def callout(interaction: discord.Interaction, date_of_callout: str, reason: str = '', potential_fill: str = '') -> None:
     delete_invalidate()
     cleanup_invalidate()
     user_id = interaction.user.id
@@ -192,7 +193,7 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
     user_char_name = DATABASE_CONN.return_char_name(user_id)
 
     try:
-        DATABASE_CONN.add_callout(user_id=user_id, callout=date_of_callout, reason=reason, nickname=user_nick, char_name=user_char_name)
+        DATABASE_CONN.add_callout(user_id=user_id, callout=date_of_callout, reason=reason, nickname=user_nick, char_name=user_char_name, potential_fill=potential_fill)
     except psycopg2.errors.UniqueViolation:
         await interaction.response.send_message(f'{user_char_name} -- you have already added a callout for {date_of_callout} with reason: {reason}')
     except psycopg2.errors.InvalidDatetimeFormat:

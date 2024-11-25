@@ -96,7 +96,7 @@ class DBHelper():
         return cursor.fetchall()
     
 
-    def add_callout(self, user_id: int, callout: datetime.date, reason: str, nickname: str, char_name: str) -> None:
+    def add_callout(self, user_id: int, callout: datetime.date, reason: str, nickname: str, char_name: str, potential_fill: str) -> None:
         """Add a callout to the database
 
         Args:
@@ -108,7 +108,7 @@ class DBHelper():
         """
         cursor = self.__CONN.cursor()
 
-        cursor.execute("INSERT INTO newcallouts (user_id, date, reason, nickname, charname) VALUES (%s, %s, %s, %s, %s)", (user_id, callout, reason, nickname, char_name))
+        cursor.execute("INSERT INTO newcallouts (user_id, date, reason, nickname, charname) VALUES (%s, %s, %s, %s, %s, %s)", (user_id, callout, reason, nickname, char_name, potential_fill))
         self.__CONN.commit()
 
         return
@@ -128,6 +128,7 @@ class DBHelper():
 
         return
     
+
     def formatted_list_of_callouts(self, callouts: list) -> str:
         """Format the python list of callouts.
 
@@ -177,6 +178,7 @@ class DBHelper():
         output += "END OF MESSAGE"
         return output
     
+
     def format_list_of_callouts(self, callouts: list) -> str:
         """Format the python list of callouts.
 
@@ -188,6 +190,7 @@ class DBHelper():
         """
         return self.formatted_list_of_callouts(callouts=callouts)
     
+
     def register_char_name(self, uid: int, char_name: str) -> None:
         """ allows users to register their character name with the bot, allowing silly nicknames to be used independent of their
             character's name
@@ -202,6 +205,7 @@ class DBHelper():
 
         return
     
+
     def return_char_name(self, uid: int) -> str:
         """Utility method to return the character name based on a specific discord ID
 
@@ -221,7 +225,8 @@ class DBHelper():
             return ""
         else: 
             return output
-        
+
+
     def remove_registration(self, uid: int, isOkay: bool) -> None:
         cursor = self.__CONN.cursor()
 
@@ -231,11 +236,13 @@ class DBHelper():
         cursor.execute(f"DELETE FROM charnames WHERE uid = {uid}")
         return
         
+
     def number_affected_in_cleanup(self) -> int:
         cursor = self.__CONN.cursor()
         cursor.execute(f"SELECT count(*) FROM newcallouts WHERE date < NOW();")
         
         return cursor.fetchone()[0]
+
 
     def call_cleanup(self, is_okay: bool) -> int:
 
