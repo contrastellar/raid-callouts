@@ -47,4 +47,4 @@ COPY . .
 # Expose the port that the application listens on.
 EXPOSE 8000
 
-CMD ["python3", "src/py/bot-core.py", "xiv-database.ini", "xiv-discord.token"]
+CMD ["python3", "src/py/bot_core.py", "xiv-database.ini", "xiv-discord.token"]
