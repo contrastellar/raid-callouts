@@ -42,4 +42,4 @@ jobs:
               run: |
                 cd $GITHUB_WORKSPACE
                 conda activate test-helper-module
-                python -m pytest ./src/py/db-helper-tests.py
+                python -m pytest ./src/py/db_helper_tests.py
