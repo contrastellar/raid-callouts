@@ -15,7 +15,7 @@ import argparse
 import discord
 import psycopg2
 from discord.ext import commands
-import helper.request_helper, helper.db_helper
+import helper.db_helper
 
 DAYS_FOR_CALLOUTS = 7
 CONTRASTELLAR = 181187505448681472
@@ -36,17 +36,18 @@ parser.add_argument('token')
 
 def cleanup_invalidate() -> None:
     DATABASE_CONN.is_procedure_queued = False
-    return
+    
 
 def delete_invalidate() -> None:
     DATABASE_CONN.is_unregister_queued = False
-    return
+    
 
 @client.event
 async def on_ready() -> None:
     await client.tree.sync()
     print(f'{client.user} has connected to Discord!')
     return
+
 
 @client.tree.command()
 async def help(interaction: discord.Interaction) -> None:
@@ -235,5 +236,6 @@ args: argparse.Namespace = parser.parse_args()
 # #will not handle the parsing of the returns from the db
 DATABASE_CONN = helper.db_helper.DBHelper(args.database)
 
-TOKEN = open(args.token, encoding='utf-8').read()
-client.run(TOKEN)
+
+with open(args.token, encoding='utf-8') as TOKEN:
+    client.run(TOKEN)
