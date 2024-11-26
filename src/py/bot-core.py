@@ -200,6 +200,8 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
         await interaction.response.send_message(f'{user_char_name} -- please format the date as one of the following: \nYYYY-MM-DD \nMM-DD-YYYY \nYYYYMMDD')
     except psycopg2.errors.ForeignKeyViolation:
         await interaction.response.send_message(f'{user_nick} -- please register with the bot using the following command!\n`/registercharacter`\n Please use your in-game name!')
+    except psycopg2.Error as e:
+        await interaction.response.send_message(f'{user_nick} -- an error has occured!\nNotifying <@{CONTRASTELLAR}> of this error.\n{e}')
     else:
         await interaction.response.send_message(f'{user_char_name} -- you added a callout for {date_of_callout} with reason: {reason}')
 
@@ -213,7 +215,7 @@ async def remove_callout(interaction: discord.Interaction, date_of_callout: str)
     userCharName = DATABASE_CONN.return_char_name(user_id)
     try:
         DATABASE_CONN.remove_callout(user_id=user_id, callout=date_of_callout)
-    except psycopg2.errors.Error:
+    except psycopg2.Error:
         await interaction.response.send_message(f'{userCharName} -- you have not added a callout for {date_of_callout}')
     else:
         await interaction.response.send_message(f'{userCharName} removed a callout for {date_of_callout}')
