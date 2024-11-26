@@ -22,6 +22,12 @@ CONTRASTELLAR = 181187505448681472
 
 DATABASE_CONN: helper.db_helper.DBHelper = None
 
+# psycopg2 'imports'
+UNIQUEVIOLATION: psycopg2.Error = psycopg2.errors.lookup(psycopg2.errorcodes.UNIQUE_VIOLATION)
+INVALIDDATETIMEFORMAT: psycopg2.Error = psycopg2.errors.lookup(psycopg2.errorcodes.INVALID_DATETIME_FORMAT)
+FOREIGNKEYVIOLATION: psycopg2.Error = psycopg2.errors.lookup(psycopg2.errorcodes.FOREIGN_KEY_VIOLATION)
+
+# discord variables
 intents = discord.Intents.default()
 intents.message_content = True
 intents.guild_messages = True
