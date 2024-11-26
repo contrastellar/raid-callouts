@@ -17,3 +17,6 @@ run_linter:
 
 run_tests:
 	pytest $(db_tests_path)
+
+generate_backup:
+	tar cvf "backup-"$$(date -Idate).tar .
