@@ -35,7 +35,7 @@ def load_config(filename='database.ini', section='postgresql'):
 
     else:
         raise Exception('Section {0} not found in the {1} file'.format(section, filename))
-    
+
     return config
 
 def connect_config(config) -> psycopg2.extensions.connection:
@@ -45,21 +45,21 @@ def connect_config(config) -> psycopg2.extensions.connection:
         with psycopg2.connect(**config) as conn:
             print('Connected to the PostgreSQL server.')
             return conn
-        
+
     except (psycopg2.DatabaseError, Exception) as error:
         print(error)
 
     finally:
         if conn is None:
             raise psycopg2.DatabaseError('Failed to connect to the PostgreSQL database')
-    
+
 
 class DBHelper():
     """
     The helper class for the raid-callouts bot.
     This class will contain all of the helper functions for the bot
     """
-    
+
     __CONN: psycopg2.extensions.connection = None
     is_procedure_queued: bool = False
     is_unregister_queued: bool = False
@@ -94,7 +94,7 @@ class DBHelper():
         self.__CONN.commit()
 
         return cursor.fetchall()
-    
+
 
     def add_callout(self, user_id: int, callout: datetime.date, reason: str, nickname: str, char_name: str) -> None:
         """Add a callout to the database
@@ -112,7 +112,7 @@ class DBHelper():
         self.__CONN.commit()
 
         return
-    
+
 
     def remove_callout(self, user_id: int, callout: datetime.datetime) -> None:
         """Remove a callout based on user + date, which form the primary key in the db
@@ -127,7 +127,7 @@ class DBHelper():
         self.__CONN.commit()
 
         return
-    
+
     def formatted_list_of_callouts(self, callouts: list) -> str:
         """Format the python list of callouts.
 
@@ -143,13 +143,13 @@ class DBHelper():
         # Quick and dirty way to say that there were no callouts found during the query
         if length == 0:
             return 'No callouts found for the requested timeframe'
-        
+
         for entry in callouts:
-            
+
             # this is a bit wonky, but we take the known constant width of each entry (4 columns)
             # then we use python's range function to turn "item" into an interator
             # Then we do some funky logic on the entry that we're iterating over
-            # in order to get the proper formatting 
+            # in order to get the proper formatting
             for item in range(4):
                 if item == 0:
                     # skip discord user ID always
@@ -176,7 +176,7 @@ class DBHelper():
 
         output += "END OF MESSAGE"
         return output
-    
+
     def format_list_of_callouts(self, callouts: list) -> str:
         """Format the python list of callouts.
 
@@ -187,7 +187,7 @@ class DBHelper():
             str: The formatted list
         """
         return self.formatted_list_of_callouts(callouts=callouts)
-    
+
     def register_char_name(self, uid: int, char_name: str) -> None:
         """ allows users to register their character name with the bot, allowing silly nicknames to be used independent of their
             character's name
@@ -195,13 +195,13 @@ class DBHelper():
         Arguments:
             uid -- Discord User ID of the user to be registered
             char_name -- User-supplied character name, to be inserted into the table
-        """        
+        """
         cursor = self.__CONN.cursor()
         cursor.execute("INSERT INTO charnames (uid, charname) VALUES (%s, %s)", (uid, char_name))
         self.__CONN.commit()
 
         return
-    
+
     def return_char_name(self, uid: int) -> str:
         """Utility method to return the character name based on a specific discord ID
 
@@ -219,9 +219,9 @@ class DBHelper():
             output = cursor.fetchone()[0]
         except TypeError:
             return ""
-        else: 
+        else:
             return output
-        
+
     def remove_registration(self, uid: int, isOkay: bool) -> None:
         cursor = self.__CONN.cursor()
 
@@ -230,11 +230,11 @@ class DBHelper():
 
         cursor.execute(f"DELETE FROM charnames WHERE uid = {uid}")
         return
-        
+
     def number_affected_in_cleanup(self) -> int:
         cursor = self.__CONN.cursor()
         cursor.execute(f"SELECT count(*) FROM newcallouts WHERE date < NOW();")
-        
+
         return cursor.fetchone()[0]
 
     def call_cleanup(self, is_okay: bool) -> int:
@@ -243,9 +243,8 @@ class DBHelper():
 
         if not is_okay:
             raise Exception("Not queued properly!")
-        
+
         cursor = self.__CONN.cursor()
         cursor.execute(f"CALL cleanup();")
         print("Cleanup was called!")
         return number_to_be_affected
-    

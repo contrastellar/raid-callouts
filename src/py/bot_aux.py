@@ -22,7 +22,7 @@ client = discord.Client(intents=intents)
 
 NUMBER_OF_DAYS = 7
 
-parser: argparse.ArgumentParser = argparse.ArgumentParser(prog='callouts aux', 
+parser: argparse.ArgumentParser = argparse.ArgumentParser(prog='callouts aux',
                         description='The poster for the callouts bot functionality')
 
 parser.add_argument('database')
@@ -42,7 +42,7 @@ async def on_ready():
         print(output)
         await client.close()
         return
-    
+
     print(f'{client.user} has connected.')
     print(args.guild_id)
     guild: discord.Guild = client.get_guild(args.guild_id)
