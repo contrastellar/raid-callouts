@@ -15,7 +15,6 @@ import argparse
 import discord
 import psycopg2
 from discord.ext import commands
-import psycopg2.errorcodes
 import helper.db_helper
 
 # module constants
