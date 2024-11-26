@@ -120,7 +120,7 @@ async def validate_unregister(interaction: discord.Interaction) -> None:
 async def invalidate_unregister(interaction: discord.Interaction) -> None:
     cleanup_invalidate()
     delete_invalidate()
-    print(f"User deletion has been invalidated! Aborting process!")
+    print("User deletion has been invalidated! Aborting process!")
 
     await interaction.response.send_message("Unregister has been invalidated!")
 
@@ -141,9 +141,9 @@ async def cleanup(interaction: discord.Interaction) -> None:
     delete_invalidate()
     cleanup_invalidate()
     numberToBeAffected: int = DATABASE_CONN.number_affected_in_cleanup()
-    await interaction.response.send_message(f"Is the bot being weird or slow? You can try the `/validate_cleanup` command to clear out old database entries!\nBe warned that this is an admin-level command, and may have unintended side effects!\n{numberToBeAffected} rows will be affected by the `/validate_cleanup` command!\nThese entries are all in the past.")
+    await interaction.response.send_message("Is the bot being weird or slow? You can try the `/validate_cleanup` command to clear out old database entries!\nBe warned that this is an admin-level command, and may have unintended side effects!\n{numberToBeAffected} rows will be affected by the `/validate_cleanup` command!\nThese entries are all in the past.")
     DATABASE_CONN.isProcedureQueued = True
-    print(f"Bot has been primed for cleanup!")
+    print("Bot has been primed for cleanup!")
     return
 
 
@@ -163,7 +163,7 @@ async def validate_cleanup(interaction: discord.Interaction) -> None:
         await interaction.followup.send(f"Something happened! This message is to inform <@{CONTRASTELLAR}> of this error!")
         return
     
-    print(f"cleanup should be complete. Setting queue variable to False")
+    print("cleanup should be complete. Setting queue variable to False")
     DATABASE_CONN.isProcedureQueued = False
     await interaction.followup.send(f"Database has been cleaned!\n\n{number_rows_affected} rows have been purged!")
     
@@ -177,7 +177,7 @@ async def invalidate_cleanup(interaction: discord.Interaction) -> None:
     await interaction.response.defer(thinking=True)
 
     print(f"{interaction.user.id} has called the invalidate command!")
-    print(f"Cleanup has been invalidated!")
+    print("Cleanup has been invalidated!")
     await interaction.followup.send("The queued action has been cancelled!")
 
     return
