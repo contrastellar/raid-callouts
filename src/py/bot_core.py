@@ -38,7 +38,7 @@ intents.presences = False
 client = commands.Bot(command_prefix='!', intents=intents)
 
 # parser declaration
-parser: argparse.ArgumentParser = argparse.ArgumentParser(prog='callouts core', 
+parser: argparse.ArgumentParser = argparse.ArgumentParser(prog='callouts core',
                         description='The listener for the callouts bot functionality')
 parser.add_argument('database')
 parser.add_argument('token')
@@ -47,11 +47,11 @@ parser.add_argument('token')
 # utility methods
 def cleanup_invalidate() -> None:
     DATABASE_CONN.is_procedure_queued = False
-    
+
 
 def delete_invalidate() -> None:
     DATABASE_CONN.is_unregister_queued = False
-    
+
 
 # discord commands
 @client.event
@@ -91,14 +91,14 @@ async def check_char_name(interaction: discord.Interaction) -> None:
     delete_invalidate()
     cleanup_invalidate()
     charname: str = DATABASE_CONN.return_char_name(interaction.user.id)
-    
+
     if charname == "":
         await interaction.response.send_message("You have not registered! Please do with `/registercharacter`")
         return
     if interaction.user.id == 151162055142014976:
         await interaction.response.send_message("You are: " + charname + "... in case you forgot.")
         return
-    
+
     await interaction.response.send_message("You are: " + charname)
     return
 
@@ -168,17 +168,17 @@ async def validate_cleanup(interaction: discord.Interaction) -> None:
 
     number_rows_affected: int
 
-    try: 
+    try:
         number_rows_affected = DATABASE_CONN.call_cleanup(DATABASE_CONN.is_procedure_queued)
     except psycopg2.Error as e:
         print(e)
         await interaction.followup.send(f"Something happened! This message is to inform <@{CONTRASTELLAR}> of this error!\n`{e}`")
         return
-    
+
     print("cleanup should be complete. Setting queue variable to False")
     DATABASE_CONN.is_procedure_queued = False
     await interaction.followup.send(f"Database has been cleaned!\n\n{number_rows_affected} rows have been purged!")
-    
+
     return
 
 @client.tree.command()
@@ -224,7 +224,7 @@ async def remove_callout(interaction: discord.Interaction, date_of_callout: str)
     cleanup_invalidate()
     user_id = interaction.user.id
     user_char_name = DATABASE_CONN.return_char_name(user_id)
-    
+
     try:
         DATABASE_CONN.remove_callout(user_id=user_id, callout=date_of_callout)
     except psycopg2.Error:
@@ -246,7 +246,7 @@ async def schedule(interaction: discord.Interaction, days: int = DAYS_FOR_CALLOU
 
 args: argparse.Namespace = parser.parse_args()
 
-# To be used for reading/writing to the database 
+# To be used for reading/writing to the database
 # #will not handle the parsing of the returns from the db
 DATABASE_CONN = helper.db_helper.DBHelper(args.database)
 
