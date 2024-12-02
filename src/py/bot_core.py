@@ -1,3 +1,4 @@
+# pylint: disable=consider-using-with, no-member
 """
 This module is the listener to discord.
 This module will listen to the discord server for two things:
@@ -11,6 +12,7 @@ This module will listen to the discord server for two things:
 
 @author: Gabriella 'contrastellar' Agathon
 """
+
 import argparse
 import discord
 import psycopg2
@@ -24,9 +26,9 @@ CONTRASTELLAR = 181187505448681472
 DATABASE_CONN: helper.db_helper.DBHelper = None
 
 # psycopg2 'imports'
-UNIQUEVIOLATION: psycopg2.Error = psycopg2.errors.lookup(psycopg2.errorcodes.UNIQUE_VIOLATION)
-INVALIDDATETIMEFORMAT: psycopg2.Error = psycopg2.errors.lookup(psycopg2.errorcodes.INVALID_DATETIME_FORMAT)
-FOREIGNKEYVIOLATION: psycopg2.Error = psycopg2.errors.lookup(psycopg2.errorcodes.FOREIGN_KEY_VIOLATION)
+UNIQUEVIOLATION: psycopg2.Error = psycopg2.errors.UniqueViolation
+INVALIDDATETIMEFORMAT: psycopg2.Error = psycopg2.errors.InvalidDatetimeFormat
+FOREIGNKEYVIOLATION: psycopg2.Error = psycopg2.errors.ForeignKeyViolation
 
 # discord variables
 intents = discord.Intents.default()
@@ -251,5 +253,5 @@ args: argparse.Namespace = parser.parse_args()
 DATABASE_CONN = helper.db_helper.DBHelper(args.database)
 
 
-with open(args.token, encoding='utf-8') as TOKEN:
-    client.run(TOKEN)
+TOKEN: str = open(args.token, encoding='utf-8').read()
+client.run(TOKEN)
