@@ -108,7 +108,7 @@ class DBHelper():
         """
         cursor = self.__CONN.cursor()
 
-        cursor.execute("INSERT INTO newcallouts (user_id, date, reason, nickname, charname) VALUES (%s, %s, %s, %s, %s, %s)", (user_id, callout, reason, nickname, char_name, potential_fill))
+        cursor.execute("INSERT INTO newcallouts (user_id, date, reason, nickname, charname, fill) VALUES (%s, %s, %s, %s, %s, %s)", (user_id, callout, reason, nickname, char_name, potential_fill))
         self.__CONN.commit()
 
         return
@@ -151,7 +151,7 @@ class DBHelper():
             # then we use python's range function to turn "item" into an interator
             # Then we do some funky logic on the entry that we're iterating over
             # in order to get the proper formatting
-            for item in range(4):
+            for item in range(5):
                 if item == 0:
                     # skip discord user ID always
                     continue
@@ -173,7 +173,14 @@ class DBHelper():
                 elif item == 3:
                     # Finally add the reason for the user's callout
                     # two line breaks as Yasu requested
-                    output += entry[2] + "\n---\n"
+                    output += entry[2] + ' '
+
+                elif item == 4:
+                    if entry[5] is not None:
+                        output += f'• potential fill -- {entry[5]}\n--\n'
+                    else:
+                        output += '\n--\n'
+
 
         output += "END OF MESSAGE"
         return output
