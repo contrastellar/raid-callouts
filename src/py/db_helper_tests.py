@@ -25,7 +25,7 @@ class TestClass():
 
 
     def test_add_callout(self) -> None:
-        callout = self.DATABASE_CONN.add_callout(user_id=1, callout=datetime.date.today(), reason='test', nickname='test', char_name='test')
+        callout = self.DATABASE_CONN.add_callout(user_id=1, callout=datetime.date.today(), reason='test', nickname='test', char_name='test', potential_fill='test')
         assert callout is None
 
 
