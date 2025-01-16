@@ -1,0 +1,103 @@
+name: test and deploy
+
+on:
+    push:
+        branches: [ main ]
+    # Set up for manual running, just in case. Can be removed later
+    workflow_dispatch:
+
+jobs:
+    # test locally on the runner, using miniconda
+    test:
+      runs-on: ubuntu-latest
+      strategy:
+          matrix:
+              python-version: [3.11.5]
+              
+      steps:
+          - uses: actions/checkout@v4.1.1
+          - name: Set up conda /w python version ${{ matrix.python-version }}
+            uses: conda-incubator/setup-miniconda@v3.0.2
+            with:
+                auto-update-conda: true
+                python-version: ${{ matrix.python-version }}
+
+          - name: Install dependencies
+            shell: bash -l {0}
+            run: |
+                conda env create --file environment.yml -n test-helper-module
+                conda init
+                conda activate test-helper-module
+                python -m pip install --upgrade pip
+                pip install -r requirements.txt
+
+          - name: add database.ini
+            shell: bash -l {0}
+            run: |
+                  cd $GITHUB_WORKSPACE/
+                  touch database.ini
+                  echo "${{ secrets.DATABASE_INI }}" >> database.ini
+
+          - name: Run tests
+            shell: bash -l {0}
+            run: |
+              conda activate test-helper-module
+              python -m pytest src/py/db-helper-tests.py
+    
+    # Checkout the repo, add the dependency files, push to host, build + run (via docker compose up)
+    push-and-build:
+        runs-on: ubuntu-latest
+        needs: "test"
+
+        steps:
+            - uses: actions/checkout@v4
+            
+            - uses: shimataro/ssh-key-action@v2.7.0
+              with:
+                key: ${{ secrets.HOST_PRIVATEKEY }}
+                known_hosts: 'placeholder'
+
+            - name: add xiv database.ini
+              run: |
+                cd $GITHUB_WORKSPACE/
+                touch database.ini
+                echo "${{ secrets.DATABASE_INI }}" >> xiv-database.ini
+
+            - name: add ffxiv discord token
+              run: |
+                cd $GITHUB_WORKSPACE/
+                echo "${{ secrets.DISCORD_TOKEN }}" >> xiv-discord.token
+
+            - name: add dnd database.ini
+              run: |
+                cd $GITHUB_WORKSPACE/
+                touch database.ini
+                echo "${{ secrets.DND_DATABASE_INI }}" >> dnd-database.ini
+
+            - name: add dnd discord token
+              run: |
+                cd $GITHUB_WORKSPACE/
+                echo "${{ secrets.DND_DISCORD_TOKEN }}" >> dnd-discord.token
+
+            - name: add known hosts to runner
+              run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+            - name: clean build directory on host
+              run: |
+                ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "rm -rdf /home/${{ secrets.HOST_USER }}/runner/raid-callouts"
+            
+            # This is set to continue even w/ error, because there is a chance that docker compose down doesn't completely work
+            - name: remove old image from host
+              run: |
+                ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "cd /home/${{ secrets.HOST_USER }}/runner/ && docker compose down"
+              continue-on-error: true
+                
+            - name: deploy /w rsync to host
+              run: |
+                rsync -avz $GITHUB_WORKSPACE ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.HOST_USER }}/runner/
+            
+            - name: build docker image on host + run it
+              run: |
+               ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "cd /home/${{ secrets.HOST_USER }}/runner/ && docker compose up --build -d"
+
+            
