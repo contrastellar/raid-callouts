@@ -214,8 +214,10 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
         await interaction.response.send_message(f'{user_char_name} -- please format the date as one of the following: \nYYYY-MM-DD \nMM-DD-YYYY \nYYYYMMDD')
     except FOREIGNKEYVIOLATION:
         await interaction.response.send_message(f'{user_nick} -- please register with the bot using the following command!\n`/registercharacter`\n Please use your in-game name!')
+    except helper.db_helper.DateTimeError:
+        await interaction.response.send_message(f'{user_nick}, you\'re trying to submit a callout for a time in the past! Please verify that this is what you want to do!')
     except psycopg2.Error as e:
-        await interaction.response.send_message(f'{user_nick} -- an error has occured!\nNotifying <@{CONTRASTELLAR}> of this error.\n{e}')
+        await interaction.response.send_message(f'{user_nick} -- an error has occured!\nNotifying <@{CONTRASTELLAR}> of this error. Error is as follows --\n{e}')
     else:
         await interaction.response.send_message(f'{user_char_name} -- you added a callout for {date_of_callout} with reason: {reason}')
 
