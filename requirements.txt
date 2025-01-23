@@ -24,6 +24,6 @@ pytest==8.2.2
 requests==2.31.0
 setuptools==70.0.0
 tomlkit==0.13.2
-urllib3==2.1.0
+urllib3==2.2.2
 wheel==0.41.2
 yarl==1.9.4
