@@ -112,9 +112,7 @@ class DBHelper():
         """
         cursor = self.__CONN.cursor()
         current_day: datetime.date = datetime.date.today()
-
-        if callout < current_day:
-            raise DateTimeError("Requesting a date in the past.")
+        callout_date: datetime.date = datetime.datetime.strptime(callout, )
 
         cursor.execute("INSERT INTO newcallouts (user_id, date, reason, nickname, charname, fill) VALUES (%s, %s, %s, %s, %s, %s)", (user_id, callout, reason, nickname, char_name, potential_fill))
         self.__CONN.commit()
@@ -122,7 +120,7 @@ class DBHelper():
         return
 
 
-    def remove_callout(self, user_id: int, callout: datetime.datetime) -> None:
+    def remove_callout(self, user_id: int, callout: datetime.date) -> None:
         """Remove a callout based on user + date, which form the primary key in the db
 
         Args:
