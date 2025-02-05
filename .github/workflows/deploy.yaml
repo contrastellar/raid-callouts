@@ -54,7 +54,7 @@ jobs:
             
             - uses: shimataro/ssh-key-action@v2.7.0
               with:
-                key: ${{ secrets.HOST_PRIVATEKEY }}
+                key: ${{ secrets.SKYWATCH_PRIVATE_KEY }}
                 known_hosts: 'placeholder'
 
             - name: add xiv database.ini
@@ -86,6 +86,7 @@ jobs:
             - name: clean build directory on host
               run: |
                 ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_SKYWATCH_HOST }} "rm -rdf /home/${{ secrets.HOST_USER }}/runner/raid-callouts"
+              continue-on-error: true
             
             # This is set to continue even w/ error, because there is a chance that docker compose down doesn't completely work
             - name: remove old image from host
