@@ -238,7 +238,7 @@ async def remove_callout(interaction: discord.Interaction, date_of_callout: str)
 async def schedule(interaction: discord.Interaction, days: int = DAYS_FOR_CALLOUTS) -> None:
     delete_invalidate()
     cleanup_invalidate()
-    interaction.response.defer(thinking=True)
+    await interaction.response.defer(thinking=True)
     callouts: list = DATABASE_CONN.query_callouts(days=days)
     callouts: str = DATABASE_CONN.formatted_list_of_callouts(callouts)
     await interaction.followup.send(f'Callouts for the next {days} days:\n{callouts}')
