@@ -82,17 +82,18 @@ jobs:
             - name: add known hosts to runner
               run: |
                 ssh-keyscan -H ${{ secrets.SSH_SKYWATCH_HOST }} >> ~/.ssh/known_hosts
-
+                
+            # This is set to continue even w/ error, because there is a chance that docker compose down doesn't completely work
+            - name: remove old image from host
+              run: |
+                ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_SKYWATCH_HOST }} "cd /home/${{ secrets.HOST_USER }}/runner/raid-callouts && docker compose down"
+              continue-on-error: true
+              
             - name: clean build directory on host
               run: |
                 ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_SKYWATCH_HOST }} "rm -rdf /home/${{ secrets.HOST_USER }}/runner/raid-callouts"
               continue-on-error: true
             
-            # This is set to continue even w/ error, because there is a chance that docker compose down doesn't completely work
-            - name: remove old image from host
-              run: |
-                ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_SKYWATCH_HOST }} "cd /home/${{ secrets.HOST_USER }}/runner/ && docker compose down"
-              continue-on-error: true
                 
             - name: deploy /w rsync to host
               run: |
