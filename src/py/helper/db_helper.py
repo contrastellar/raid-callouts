@@ -112,7 +112,8 @@ class DBHelper():
         """
         cursor = self.__CONN.cursor()
         current_day: datetime.date = datetime.date.today()
-        callout_date: datetime.date = datetime.datetime.strptime(callout, )
+        callout_date: datetime.date = datetime.datetime.strptime(callout, '%m-%d-%Y')
+        print(callout_date)
 
         cursor.execute("INSERT INTO newcallouts (user_id, date, reason, nickname, charname, fill) VALUES (%s, %s, %s, %s, %s, %s)", (user_id, callout, reason, nickname, char_name, potential_fill))
         self.__CONN.commit()
