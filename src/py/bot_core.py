@@ -78,6 +78,7 @@ async def on_error(interaction: discord.Interaction) -> None:
     return
 
 
+# === slash commands are below here
 
 
 @client.tree.command(name="help")
