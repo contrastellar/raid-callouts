@@ -62,6 +62,16 @@ async def on_ready() -> None:
     print(f'{client.user} has connected to Discord!')
     return
 
+@client.event
+async def on_error(interaction: discord.Interaction) -> None:
+    delete_invalidate()
+    cleanup_invalidate()
+    output = "Something awful has happened. In all honesty you should never see this message. Reporting to <@{CONTRASTELLAR}>."
+    await interaction.response.send_message(output)
+    return
+
+
+
 
 @client.tree.command(name="help")
 async def bot_help(interaction: discord.Interaction) -> None:
@@ -146,7 +156,7 @@ async def ping(interaction: discord.Interaction) -> None:
     delete_invalidate()
     cleanup_invalidate()
     user_id = interaction.user.id
-    await interaction.response.send_message(f'Pong! {user_id}')
+    await interaction.response.send_message(f'Pong! {user_id} -- the bot is active, please message contrastellar with issues!')
     return
 
 
