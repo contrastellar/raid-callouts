@@ -44,6 +44,8 @@ parser: argparse.ArgumentParser = argparse.ArgumentParser(prog='callouts core',
                         description='The listener for the callouts bot functionality')
 parser.add_argument('database')
 parser.add_argument('token')
+parser.add_argument('guild_id', type=int)
+parser.add_argument('channel_id', type=int)
 
 
 # utility methods
@@ -60,6 +62,11 @@ def delete_invalidate() -> None:
 async def on_ready() -> None:
     await client.tree.sync()
     print(f'{client.user} has connected to Discord!')
+    print(args.guild_id)
+    guild: discord.Guild = client.get_guild(args.guild_id)
+    channel: discord.TextChannel = guild.get_channel(args.channel_id)
+    output = f'The bot is now running!\nPlease message <@{CONTRASTELLAR}> with any errors!'
+    await channel.send(output)
     return
 
 @client.event
