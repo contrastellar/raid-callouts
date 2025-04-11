@@ -54,7 +54,7 @@ jobs:
             
             - uses: shimataro/ssh-key-action@v2.7.0
               with:
-                key: ${{ secrets.SKYWATCH_PRIVATE_KEY }}
+                key: ${{ secrets.HOST_PRIVATEKEY }}
                 known_hosts: 'placeholder'
 
             - name: add xiv database.ini
