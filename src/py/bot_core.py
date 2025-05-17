@@ -217,7 +217,7 @@ async def invalidate_cleanup(interaction: discord.Interaction) -> None:
 
 
 @client.tree.command()
-async def callout(interaction: discord.Interaction, date_of_callout: str, reason: str = '', fill: str = '') -> None:
+async def callout(interaction: discord.Interaction, day: int, month: int, year: int, reason: str = '', fill: str = '') -> None:
     delete_invalidate()
     cleanup_invalidate()
     user_id = interaction.user.id
@@ -226,7 +226,7 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
     user_char_name = DATABASE_CONN.return_char_name(user_id)
 
     today: datetime.datetime = datetime.datetime.now()
-    callout_date = datetime.datetime.strptime(date_of_callout, '%m/%d/%y')
+    callout_date = datetime.datetime(year=year, month=month, day=day, hour=23, minute=59)
 
     if today > callout_date:
         await interaction.response.send_message(f'{user_char_name}, date in the past given. Please give a date for today or in the future!')
@@ -237,9 +237,9 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
         return
 
     try:
-        DATABASE_CONN.add_callout(user_id=user_id, callout=date_of_callout, reason=reason, nickname=user_nick, char_name=user_char_name, potential_fill=fill)
+        DATABASE_CONN.add_callout(user_id=user_id, callout=callout_date, reason=reason, nickname=user_nick, char_name=user_char_name, potential_fill=fill)
     except UNIQUEVIOLATION:
-        await interaction.response.send_message(f'{user_char_name} -- you have already added a callout for {date_of_callout} with reason: {reason}')
+        await interaction.response.send_message(f'{user_char_name} -- you have already added a callout for {callout_date} with reason: {reason}')
     except INVALIDDATETIMEFORMAT:
         await interaction.response.send_message(f'{user_char_name} -- please format the date as the following format: MM/DD/YYYY')
     except FOREIGNKEYVIOLATION:
@@ -249,21 +249,23 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
     except psycopg2.Error as e:
         await interaction.response.send_message(f'{user_nick} -- an error has occured!\nNotifying <@{CONTRASTELLAR}> of this error. Error is as follows --\n{e}')
     else:
-        await interaction.response.send_message(f'{user_char_name} -- you added a callout for {date_of_callout} with reason: {reason}')
+        await interaction.response.send_message(f'{user_char_name} -- you added a callout for {callout_date} with reason: {reason}')
+        await interaction.followup.send(f'{DATABASE_CONN.format_list_of_callouts(DATABASE_CONN.query_callouts(7))}')
 
 
 @client.tree.command()
-async def remove_callout(interaction: discord.Interaction, date_of_callout: str) -> None:
+async def remove_callout(interaction: discord.Interaction, day: int, month: int, year: int) -> None:
     delete_invalidate()
     cleanup_invalidate()
     user_id = interaction.user.id
     user_char_name = DATABASE_CONN.return_char_name(user_id)
+    callout_date: datetime.date = datetime.date(year=year, month=month, day=day)
     try:
-        DATABASE_CONN.remove_callout(user_id=user_id, callout=date_of_callout)
+        DATABASE_CONN.remove_callout(user_id=user_id, callout=callout_date)
     except psycopg2.Error:
-        await interaction.response.send_message(f'{user_char_name} -- you have not added a callout for {date_of_callout}')
+        await interaction.response.send_message(f'{user_char_name} -- you have not added a callout for {callout_date}')
     else:
-        await interaction.response.send_message(f'{user_char_name} removed a callout for {date_of_callout}')
+        await interaction.response.send_message(f'{user_char_name} removed a callout for {callout_date}')
 
 
 @client.tree.command()
