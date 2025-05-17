@@ -10,7 +10,7 @@ clean:
 	docker compose down
 
 run_listener:
-	python $(core_path) xiv-database.ini xiv-discord.token
+	python $(core_path) xiv-database.ini xiv-discord.token 477298331777761280 927271992216920146
 
 run_linter:
 	pylint --rcfile pylint.toml $(core_path) $(aux_path) $(db_helper_path)

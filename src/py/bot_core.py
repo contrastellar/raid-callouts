@@ -13,6 +13,7 @@ This module will listen to the discord server for two things:
 @author: Gabriella 'contrastellar' Agathon
 """
 
+import datetime
 import argparse
 import discord
 import psycopg2
@@ -224,6 +225,13 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
 
     user_char_name = DATABASE_CONN.return_char_name(user_id)
 
+    today: datetime.datetime = datetime.datetime.now()
+    callout_date = datetime.datetime.strptime(date_of_callout, '%m/%d/%y')
+
+    if today > callout_date:
+        await interaction.response.send_message(f'{user_char_name}, date in the past given. Please give a date for today or in the future!')
+        return
+
     if len(reason) > 512:
         await interaction.response.send_message(f'{user_char_name}, your reason was too long. Keep it to 512 characters or less.')
         return
@@ -233,7 +241,7 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
     except UNIQUEVIOLATION:
         await interaction.response.send_message(f'{user_char_name} -- you have already added a callout for {date_of_callout} with reason: {reason}')
     except INVALIDDATETIMEFORMAT:
-        await interaction.response.send_message(f'{user_char_name} -- please format the date as one of the following: \nYYYY-MM-DD \nMM-DD-YYYY \nYYYYMMDD')
+        await interaction.response.send_message(f'{user_char_name} -- please format the date as the following format: MM/DD/YYYY')
     except FOREIGNKEYVIOLATION:
         await interaction.response.send_message(f'{user_nick} -- please register with the bot using the following command!\n`/registercharacter`\n Please use your in-game name!')
     except helper.db_helper.DateTimeError:
