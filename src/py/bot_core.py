@@ -224,6 +224,10 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
 
     user_char_name = DATABASE_CONN.return_char_name(user_id)
 
+    if len(reason) > 512:
+        await interaction.response.send_message(f'{user_char_name}, your reason was too long. Keep it to 512 characters or less.')
+        return
+
     try:
         DATABASE_CONN.add_callout(user_id=user_id, callout=date_of_callout, reason=reason, nickname=user_nick, char_name=user_char_name, potential_fill=fill)
     except UNIQUEVIOLATION:
