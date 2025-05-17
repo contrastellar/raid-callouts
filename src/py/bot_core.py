@@ -225,8 +225,8 @@ async def callout(interaction: discord.Interaction, day: int, month: int, year: 
 
     user_char_name = DATABASE_CONN.return_char_name(user_id)
 
-    today: datetime.datetime = datetime.datetime.now()
-    callout_date = datetime.datetime(year=year, month=month, day=day, hour=23, minute=59)
+    today: datetime.date = datetime.date.today()
+    callout_date: datetime.date = datetime.date(year=year, month=month, day=day)
 
     if today > callout_date:
         await interaction.response.send_message(f'{user_char_name}, date in the past given. Please give a date for today or in the future!')
