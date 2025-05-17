@@ -52,6 +52,10 @@ def connect_config(config) -> psycopg2.extensions.connection:
     finally:
         if conn is None:
             raise psycopg2.DatabaseError('Failed to connect to the PostgreSQL database')
+        
+class DateTimeError(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
 
 
 class DBHelper():
@@ -107,14 +111,13 @@ class DBHelper():
             char_name (str): The character name (as supplied from registration) of the user inserting a callout
         """
         cursor = self.__CONN.cursor()
-
         cursor.execute("INSERT INTO newcallouts (user_id, date, reason, nickname, charname, fill) VALUES (%s, %s, %s, %s, %s, %s)", (user_id, callout, reason, nickname, char_name, potential_fill))
         self.__CONN.commit()
 
         return
 
 
-    def remove_callout(self, user_id: int, callout: datetime.datetime) -> None:
+    def remove_callout(self, user_id: int, callout: datetime.date) -> None:
         """Remove a callout based on user + date, which form the primary key in the db
 
         Args:
