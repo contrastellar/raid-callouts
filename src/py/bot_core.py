@@ -44,6 +44,8 @@ parser: argparse.ArgumentParser = argparse.ArgumentParser(prog='callouts core',
                         description='The listener for the callouts bot functionality')
 parser.add_argument('database')
 parser.add_argument('token')
+parser.add_argument('guild_id', type=int)
+parser.add_argument('channel_id', type=int)
 
 
 # utility methods
@@ -60,6 +62,11 @@ def delete_invalidate() -> None:
 async def on_ready() -> None:
     await client.tree.sync()
     print(f'{client.user} has connected to Discord!')
+    print(args.guild_id)
+    guild: discord.Guild = client.get_guild(args.guild_id)
+    channel: discord.TextChannel = guild.get_channel(args.channel_id)
+    output = f'The bot is now running!\nPlease message <@{CONTRASTELLAR}> with any errors!'
+    await channel.send(output)
     return
 
 @client.event
@@ -71,6 +78,7 @@ async def on_error(interaction: discord.Interaction) -> None:
     return
 
 
+# === slash commands are below here
 
 
 @client.tree.command(name="help")
@@ -215,6 +223,10 @@ async def callout(interaction: discord.Interaction, date_of_callout: str, reason
     user_nick = interaction.user.display_name
 
     user_char_name = DATABASE_CONN.return_char_name(user_id)
+
+    if len(reason) > 512:
+        await interaction.response.send_message(f'{user_char_name}, your reason was too long. Keep it to 512 characters or less.')
+        return
 
     try:
         DATABASE_CONN.add_callout(user_id=user_id, callout=date_of_callout, reason=reason, nickname=user_nick, char_name=user_char_name, potential_fill=fill)
