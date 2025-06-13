@@ -5,6 +5,8 @@ on:
         branches:
             - gabby-dev
             - josh-dev
+    pull_request:
+        types: [opened]
 
 jobs:
     test:
