@@ -5,3 +5,5 @@ TODO
 __pycache__/
 .pytest_cache/
 .vscode/
+patchnotes.md
+backups/*.tar

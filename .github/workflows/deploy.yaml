@@ -25,7 +25,7 @@ jobs:
           - name: Install dependencies
             shell: bash -l {0}
             run: |
-                conda env create -f environment.yml -n test-helper-module
+                conda env create --file environment.yml -n test-helper-module
                 conda init
                 conda activate test-helper-module
                 python -m pip install --upgrade pip
@@ -36,13 +36,13 @@ jobs:
             run: |
                   cd $GITHUB_WORKSPACE/
                   touch database.ini
-                  echo "${{ secrets.DATABASE_INI }}" >> database.ini
+                  echo "${{ secrets.DATABASE_INI }}" >> xiv-database.ini
 
           - name: Run tests
             shell: bash -l {0}
             run: |
               conda activate test-helper-module
-              python -m pytest src/py/db-helper-tests.py
+              python -m pytest src/py/db_helper_tests.py
     
     # Checkout the repo, add the dependency files, push to host, build + run (via docker compose up)
     push-and-build:
@@ -57,29 +57,43 @@ jobs:
                 key: ${{ secrets.HOST_PRIVATEKEY }}
                 known_hosts: 'placeholder'
 
-            - name: add database.ini
+            - name: add xiv database.ini
               run: |
                 cd $GITHUB_WORKSPACE/
                 touch database.ini
-                echo "${{ secrets.DATABASE_INI }}" >> database.ini
+                echo "${{ secrets.DATABASE_INI }}" >> xiv-database.ini
 
-            - name: add discord token
+            - name: add ffxiv discord token
               run: |
                 cd $GITHUB_WORKSPACE/
-                echo "${{ secrets.DISCORD_TOKEN }}" >> discord.token
+                echo "${{ secrets.DISCORD_TOKEN }}" >> xiv-discord.token
+
+            - name: add dnd database.ini
+              run: |
+                cd $GITHUB_WORKSPACE/
+                touch database.ini
+                echo "${{ secrets.DND_DATABASE_INI }}" >> dnd-database.ini
+
+            - name: add dnd discord token
+              run: |
+                cd $GITHUB_WORKSPACE/
+                echo "${{ secrets.DND_DISCORD_TOKEN }}" >> dnd-discord.token
 
             - name: add known hosts to runner
-              run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-
-            - name: clean build directory on host
               run: |
-                ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "rm -rdf /home/${{ secrets.HOST_USER }}/runner/raid-callouts"
-            
+                ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+                
             # This is set to continue even w/ error, because there is a chance that docker compose down doesn't completely work
             - name: remove old image from host
               run: |
-                ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "cd /home/${{ secrets.HOST_USER }}/runner/ && docker compose down"
+                ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "cd /home/${{ secrets.HOST_USER }}/runner/raid-callouts && docker compose down"
               continue-on-error: true
+              
+            - name: clean build directory on host
+              run: |
+                ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "rm -rdf /home/${{ secrets.HOST_USER }}/runner/raid-callouts"
+              continue-on-error: true
+            
                 
             - name: deploy /w rsync to host
               run: |
@@ -87,6 +101,6 @@ jobs:
             
             - name: build docker image on host + run it
               run: |
-               ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "cd /home/${{ secrets.HOST_USER }}/runner/ && docker compose up"
+               ssh ${{ secrets.HOST_USER }}@${{ secrets.SSH_HOST }} "cd /home/${{ secrets.HOST_USER }}/runner/raid-callouts && docker compose up --build -d"
 
             
