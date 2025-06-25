@@ -1,8 +1,16 @@
-# raid-callouts
+# Info
+`raid-callouts` is a toolset developed for the purpose of keeping track of when people are going to be absent from raid nights for my FFXIV raid team. There's some back-end things that go unsaid in the code, but will be documented here.
 
-`raid-callouts` is a service for collating and centralizing a system for users to 'call out' from raids or DND sessions.
+# Runtime
+Currently, this Discord bot is designed to run in two parts, which each part will be gone over here. There is also a "database helper" module, which is called as needed by the bot components.
 
-# Installation & Testing
+On the server itself, the `bot_core` and the `bot_aux` are "composed" into two containers using Docker Compose on a service account, and then can be invoked or run using `cron` in order to schedule things like the daily "posting" of the next week's callouts.
+
+## bot_core ("listener")
+The bot's core, is an "always on" bot, that listens for slash commands to be sent to it, and responds as necessary.
+
+## bot_aux ("poster")
+The bot's "auxillary" is a python script developed in order to post on script execution, a formatted Discord message that details the callouts for the next `7` days.
 
 This service is provided as-is by Gabriella "contrastellar" Agathon as-requested by users for their various activities.
 
