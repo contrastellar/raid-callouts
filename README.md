@@ -1,3 +1,5 @@
+[![test and deploy](https://github.com/contrastellar/raid-callouts/actions/workflows/deploy.yaml/badge.svg)](https://github.com/contrastellar/raid-callouts/actions/workflows/deploy.yaml)
+
 # Info
 `raid-callouts` is a toolset developed for the purpose of keeping track of when people are going to be absent from raid nights for my FFXIV raid team. There's some back-end things that go unsaid in the code, but will be documented here.
 
@@ -7,12 +9,10 @@ Currently, this Discord bot is designed to run in two parts, which each part wil
 On the server itself, the `bot_core` and the `bot_aux` are "composed" into two containers using Docker Compose on a service account, and then can be invoked or run using `cron` in order to schedule things like the daily "posting" of the next week's callouts.
 
 ## bot_core ("listener")
-The bot's core, is an "always on" bot, that listens for slash commands to be sent to it, and responds as necessary.
+The bot's core, is an "always on" bot, that listens for slash commands to be sent to it, and responds as necessary. Commands and their outputs can be viewed on the [wiki found here](https://github.com/contrastellar/raid-callouts/wiki)
 
 ## bot_aux ("poster")
 The bot's "auxillary" is a python script developed in order to post on script execution, a formatted Discord message that details the callouts for the next `7` days.
-
-This service is provided as-is by Gabriella "contrastellar" Agathon as-requested by users for their various activities.
 
 # Quickstart (/w conda)
 
