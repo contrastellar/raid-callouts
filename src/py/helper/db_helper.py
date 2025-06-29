@@ -52,6 +52,10 @@ def connect_config(config) -> psycopg2.extensions.connection:
     finally:
         if conn is None:
             raise psycopg2.DatabaseError('Failed to connect to the PostgreSQL database')
+        
+class DateTimeError(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
 
 
 class DBHelper():
@@ -60,14 +64,13 @@ class DBHelper():
     This class will contain all of the helper functions for the bot
     """
 
+    _config: dict
     __CONN: psycopg2.extensions.connection = None
     is_procedure_queued: bool = False
     is_unregister_queued: bool = False
 
     def __init__(self, filename = 'database.ini', section = 'postgresql') -> None:
-        _config = load_config(filename=filename, section=section)
-        self.__CONN = connect_config(_config)
-        self.__CONN.autocommit = True
+        self._config = load_config(filename=filename, section=section)
 
 
     def __del__(self):
@@ -88,6 +91,8 @@ class DBHelper():
         Returns:
             list: list of users + their callouts for the next X days
         """
+        self.__CONN = connect_config(self._config)
+        self.__CONN.autocommit = True
         cursor = self.__CONN.cursor()
         # Weird query, but it grabs the callouts from the last day to the next X days.
         cursor.execute(f"SELECT * FROM newcallouts WHERE date >= NOW() - INTERVAL '1 day' AND date <= NOW() + INTERVAL '{days} days' ORDER BY date ASC;")
@@ -106,21 +111,24 @@ class DBHelper():
             nickname (str): The server(guild) nickname of the user who is making the callout
             char_name (str): The character name (as supplied from registration) of the user inserting a callout
         """
+        self.__CONN = connect_config(self._config)
+        self.__CONN.autocommit = True
         cursor = self.__CONN.cursor()
-
         cursor.execute("INSERT INTO newcallouts (user_id, date, reason, nickname, charname, fill) VALUES (%s, %s, %s, %s, %s, %s)", (user_id, callout, reason, nickname, char_name, potential_fill))
         self.__CONN.commit()
 
         return
 
 
-    def remove_callout(self, user_id: int, callout: datetime.datetime) -> None:
+    def remove_callout(self, user_id: int, callout: datetime.date) -> None:
         """Remove a callout based on user + date, which form the primary key in the db
 
         Args:
             user_id (int): The Discord UUID of the user removing something from the db
             callout (datetime.datetime): The date of the callout
         """
+        self.__CONN = connect_config(self._config)
+        self.__CONN.autocommit = True
         cursor = self.__CONN.cursor()
 
         cursor.execute("DELETE FROM newcallouts WHERE user_id = %s AND date = %s", (user_id, callout))
@@ -206,8 +214,12 @@ class DBHelper():
             uid -- Discord User ID of the user to be registered
             char_name -- User-supplied character name, to be inserted into the table
         """
+        self.__CONN = connect_config(self._config)
+        self.__CONN.autocommit = True
         cursor = self.__CONN.cursor()
+
         cursor.execute("INSERT INTO charnames (uid, charname) VALUES (%s, %s)", (uid, char_name))
+
         self.__CONN.commit()
 
         return
@@ -222,7 +234,10 @@ class DBHelper():
         Returns:
             String; either character name or empty.
         """
+        self.__CONN = connect_config(self._config)
+        self.__CONN.autocommit = True
         cursor = self.__CONN.cursor()
+
         # was getting weird index error on this line due to tuples, so we're using an f-string
         cursor.execute(f"SELECT charname FROM charnames WHERE uid = {uid}")
         output: str = ""
@@ -235,6 +250,8 @@ class DBHelper():
 
 
     def remove_registration(self, uid: int, isOkay: bool) -> None:
+        self.__CONN = connect_config(self._config)
+        self.__CONN.autocommit = True
         cursor = self.__CONN.cursor()
 
         # need to remove all callouts!
@@ -245,6 +262,8 @@ class DBHelper():
         
 
     def number_affected_in_cleanup(self) -> int:
+        self.__CONN = connect_config(self._config)
+        self.__CONN.autocommit = True
         cursor = self.__CONN.cursor()
         cursor.execute(f"SELECT count(*) FROM newcallouts WHERE date < NOW();")
 
@@ -257,6 +276,9 @@ class DBHelper():
 
         if not is_okay:
             raise Exception("Not queued properly!")
+
+        self.__CONN = connect_config(self._config)
+        self.__CONN.autocommit = True
 
         cursor = self.__CONN.cursor()
         cursor.execute(f"CALL cleanup();")
