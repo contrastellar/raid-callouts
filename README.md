@@ -1,13 +1,35 @@
-# raid-callouts
-
+[![test and deploy](https://github.com/contrastellar/raid-callouts/actions/workflows/deploy.yaml/badge.svg)](https://github.com/contrastellar/raid-callouts/actions/workflows/deploy.yaml)
 
 # Info
+`raid-callouts` is a toolset developed for the purpose of keeping track of when people are going to be absent from raid nights for my FFXIV raid team. There's some back-end things that go unsaid in the code, but will be documented here.
 
+# Runtime
+Currently, this Discord bot is designed to run in two parts, which each part will be gone over here. There is also a "database helper" module, which is called as needed by the bot components.
 
-# Runtime 
+On the server itself, the `bot_core` and the `bot_aux` are "composed" into two containers using Docker Compose on a service account, and then can be invoked or run using `cron` in order to schedule things like the daily "posting" of the next week's callouts. There is also a `postgresql` database backend for long-term storage of callouts.
 
+## `bot_core` ("listener")
+The bot's core, is an "always on" bot, that listens for slash commands to be sent to it, and responds as necessary. Commands and their outputs can be viewed on the [wiki found here](https://github.com/contrastellar/raid-callouts/wiki)
 
-# Installation & Testing
+The core of the bot is using the command `/callout`, with a supplied day, month and year and reason for callout. This will then be printed to the Discord channel where that command was invoked, in order to show the schedule (by default for the next `7` days).
+
+The listener is also able to view the schedule for the next `x` days using the command `/schedule x`, where `x` is the number of days that should be viewed. This should be a fast response, but is dependant on how fast the database can return a query.
+
+There is an added layer of complexity, as there is the ability to register the 
+
+## `bot_aux` ("poster")
+The bot's "auxillary" is a python script developed in order to post on script execution, a formatted Discord message that details the callouts for the next `7` days.
+
+This poster is invoked, upon Docker Compose completion; by the `cron` daemon running the following:
+
+```sh
+# omitting the cron-related timing format, which is as-needed
+docker container start raid-callouts-xiv-poster-1
+```
+
+## `postgres` Database
+
+### TODO
 
 # Quickstart (/w conda)
 
@@ -41,7 +63,8 @@ conda activate raid-callouts
 6. You need to provide your own `database.ini` file, that contains your own PSQL database, if you wish to self-host the bot. Otherwise, testing will be done on Pull Request.
 
 # TODO
-- Unsure of what else needs to be done, all requirements that I can think of have been fulfilled.
+
+- All major milestones have been reached or are in PRs.
 
 # Contributing
 
