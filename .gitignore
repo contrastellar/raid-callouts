@@ -7,3 +7,6 @@ __pycache__/
 .vscode/
 patchnotes.md
 backups/*.tar
+dev-aux.Dockerfile
+dev-compose.yaml
+dev-core.Dockerfile

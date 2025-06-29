@@ -99,6 +99,15 @@ class DBHelper():
         self.__CONN.commit()
 
         return cursor.fetchall()
+    
+    def query_self_callouts(self, user_id: int, days: int = 365):
+        self.__CONN = connect_config(self._config)
+        self.__CONN.autocommit = True
+        cursor = self.__CONN.cursor()
+        cursor.execute(f"SELECT * FROM newcallouts WHERE date >= NOW() - INTERVAL '1 day' AND date <= NOW() + INTERVAL '{days} days' AND user_id = {user_id} ORDER BY date ASC;")
+        self.__CONN.commit()
+
+        return cursor.fetchall()
 
 
     def add_callout(self, user_id: int, callout: datetime.date, reason: str, nickname: str, char_name: str, potential_fill: str) -> None:

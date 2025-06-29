@@ -15,6 +15,7 @@ This module will listen to the discord server for two things:
 
 import datetime
 import argparse
+import os
 import discord
 import psycopg2
 from discord.ext import commands
@@ -64,6 +65,9 @@ async def on_ready() -> None:
     await client.tree.sync()
     print(f'{client.user} has connected to Discord!')
     print(args.guild_id)
+    if 'RAID_CALLOUTS_DEV' in os.environ:
+        return
+    
     guild: discord.Guild = client.get_guild(args.guild_id)
     channel: discord.TextChannel = guild.get_channel(args.channel_id)
     output = f'The bot is now running!\nPlease message <@{CONTRASTELLAR}> with any errors!'
@@ -277,6 +281,17 @@ async def schedule(interaction: discord.Interaction, days: int = DAYS_FOR_CALLOU
     callouts: str = DATABASE_CONN.formatted_list_of_callouts(callouts)
     await interaction.followup.send(f'Callouts for the next {days} days:\n{callouts}')
     return
+
+@client.tree.command()
+async def self_callouts(interaction: discord.Interaction, days: int = 365) -> None:
+    delete_invalidate()
+    cleanup_invalidate()
+
+    uid = interaction.user.id
+    await interaction.response.defer(thinking=True)
+    callouts: list = DATABASE_CONN.query_self_callouts(user_id=uid, days=days)
+    callouts: str = DATABASE_CONN.formatted_list_of_callouts(callouts)
+    await interaction.followup.send(f'Callouts for the next **{days}** for user **{DATABASE_CONN.return_char_name(uid)}**:\n{callouts}')
 
 
 args: argparse.Namespace = parser.parse_args()

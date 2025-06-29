@@ -7,10 +7,4 @@ services:
   xiv-poster:
     build: 
       context: .
-      dockerfile: aux.Dockerfile    
-  # dnd-listener:
-  #   build: .
-  #   command: ["python", "src/py/bot-core.py", "dnd-database.ini", "dnd-discord.token"]
-  # dnd-poster:
-  #   build: .
-  #   command: ["python", "src/py/bot-aux.py", "dnd-database.ini", "dnd-discord.token", "477298331777761280", "927271992216920146"]
+      dockerfile: aux.Dockerfile   

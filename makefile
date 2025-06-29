@@ -6,6 +6,9 @@ db_tests_path = src/py/db_helper_tests.py
 compose_up:
 	docker compose up --build
 
+compose_up_dev:
+	docker compose --file "dev-compose.yaml" up --build 
+
 clean:
 	docker compose down
 
